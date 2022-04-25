@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Антон](https://up.htmlacademy.ru/ecmascript/17/user/882763).
-* Наставник: Сергей Капов.
+* Наставник: [Сергей Карпов](https://htmlacademy.ru/profile/id518893).
 
 ---
 
