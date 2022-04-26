@@ -29,16 +29,18 @@ for (let i = 0; i < 5; i++) {
   render(new MovieCardView(), siteMovieList);
 }
 
-render(new MovieListExtraView('Top rated'), siteMovieListContainer);
-const siteMovieListRatings = document.querySelector('.films .films-list:last-child .films-list__container');
+const siteMovieListRatings = new MovieListExtraView('Top rated');
+const siteMovieListRatingsContainer = siteMovieListRatings.getElement().querySelector('.films-list__container');
+render(siteMovieListRatings, siteMovieListContainer);
 for (let i = 0; i < 2; i++) {
-  render(new MovieCardView(), siteMovieListRatings);
+  render(new MovieCardView(), siteMovieListRatingsContainer);
 }
 
-render(new MovieListExtraView('Most commented'), siteMovieListContainer);
-const siteMovieListComments = document.querySelector('.films .films-list:last-child .films-list__container');
+const siteMovieListComments = new MovieListExtraView('Most comments');
+const siteMovieListCommentsContainer = siteMovieListComments.getElement().querySelector('.films-list__container');
+render(siteMovieListComments, siteMovieListContainer);
 for (let i = 0; i < 2; i++) {
-  render(new MovieCardView(), siteMovieListComments);
+  render(new MovieCardView(), siteMovieListCommentsContainer);
 }
 
 render(new ShowMoreButtonView(), siteMovieList, 'afterend');
