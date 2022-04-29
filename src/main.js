@@ -6,17 +6,24 @@ import StatisticsView from './view/statistics.js';
 import MoviePopupView from './view/movie-popup.js';
 import BoardPresenter from './presenter/board-presenter.js';
 
+import MoviesModel from './model/movies-model.js';
+
+const movieModel = new MoviesModel();
 const siteHeader = document.querySelector('.header');
 const siteMain = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
+const boardPresenter = new BoardPresenter();
 
 render(new UserView(), siteHeader);
 render(new NavigationView(), siteMain);
 render(new SortView(), siteMain);
 
-const boardPresenter = new BoardPresenter();
-boardPresenter.init();
+boardPresenter.init(siteMain, movieModel);
 
 render(new StatisticsView(), siteFooter);
-render(new MoviePopupView(), siteFooter, 'afterend');
 
+
+// TEMP
+const moviePopupView = new MoviePopupView(movieModel.getMovies()[0]);
+render(moviePopupView, siteFooter, 'afterend');
+document.addEventListener('click', () => document.querySelector('.film-details').remove());
