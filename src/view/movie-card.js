@@ -2,7 +2,16 @@ import {createElement} from '../render.js';
 import {getYear} from '../utils.js';
 
 const createMovieCardTemplate = (movie) => {
-  const {poster, title, rating, releaseDate, runningTime, genres, fullDescription, comments} = movie;
+  const {
+    poster,
+    title,
+    rating,
+    releaseDate,
+    runningTime,
+    genres,
+    fullDescription,
+    comments
+  } = movie;
   const MAX_DESCRIPTION_LENGTH = 139;
 
   const description = fullDescription.length > MAX_DESCRIPTION_LENGTH

@@ -27,14 +27,20 @@ export default class BoardPresenter {
     }
 
     const siteMovieListRatingsElement = new MovieListExtraView('Top rated');
-    const siteMovieListRatingsContainerElement = siteMovieListRatingsElement.getElement().querySelector('.films-list__container');
+    const siteMovieListRatingsContainerElement = siteMovieListRatingsElement
+      .getElement()
+      .querySelector('.films-list__container');
+
     render(siteMovieListRatingsElement, siteMovieListContainerElement);
     for (let i = 0; i < TOP_MOVIES; i++) {
       render(new MovieCardView(this.boardMovies[i]), siteMovieListRatingsContainerElement);
     }
 
     const siteMovieListCommentsElement = new MovieListExtraView('Most comments');
-    const siteMovieListCommentsContainerElement = siteMovieListCommentsElement.getElement().querySelector('.films-list__container');
+    const siteMovieListCommentsContainerElement = siteMovieListCommentsElement
+      .getElement()
+      .querySelector('.films-list__container');
+
     render(siteMovieListCommentsElement, siteMovieListContainerElement);
     for (let i = 0; i < TOP_MOVIES; i++) {
       render(new MovieCardView(this.boardMovies[i]), siteMovieListCommentsContainerElement);

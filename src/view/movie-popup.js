@@ -35,7 +35,21 @@ const createCommentsLayout = (arr) => {
 };
 
 const createMoviePopupTemplate = (movie, comments) => {
-  const {poster, title, originalTitle, rating, director, writers, stars, releaseDate, runningTime, country, genres, fullDescription, ageRestriction} = movie;
+  const {
+    poster,
+    title,
+    originalTitle,
+    rating,
+    director,
+    writers,
+    stars,
+    releaseDate,
+    runningTime,
+    country,
+    genres,
+    fullDescription,
+    ageRestriction
+  } = movie;
 
   return (
     `<section class="film-details">
