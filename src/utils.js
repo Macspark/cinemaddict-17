@@ -14,6 +14,8 @@ const getRandomDecimal = (a = 0, b = 1, fraction = 1) => {
   return parseFloat((lower + Math.random() * (upper - lower + 1)).toFixed(fraction));
 };
 
+const getRandomArrayElement = (arr) => arr[Math.floor(Math.random()*arr.length)];
+
 const getRandomArrayElements = (arr, amount = 1) => {
   const result = arr.sort(() => .5 - Math.random()).slice(0, amount);
   return result;
@@ -25,4 +27,4 @@ const getHumanDate = (date) => date ? dayjs(date).format('DD MMMM YYYY') : '';
 
 const getHumanDateTime = (date) => date ? dayjs(date).format('YYYY/MM/DD hh:mm') : '';
 
-export {getRandomInteger, getRandomDecimal, getRandomArrayElements, getYear, getHumanDate, getHumanDateTime};
+export {getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements, getYear, getHumanDate, getHumanDateTime};
