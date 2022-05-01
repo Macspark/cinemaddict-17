@@ -1,44 +1,41 @@
 import {createElement} from '../render.js';
 import {getHumanDate, getHumanDateTime} from '../utils.js';
 
+const createGenresLayout = (arr) => {
+  let result = '';
+
+  arr.forEach((genre) => {
+    result =
+      `${result}
+      <span class="film-details__genre">${genre}</span>`;
+  });
+
+  return result;
+};
+
+const createCommentsLayout = (arr) => {
+  const commentsLayout = arr.reduce((result, comment) => (
+    `${result}
+    <li class="film-details__comment">
+        <span class="film-details__comment-emoji">
+          <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-${comment.emotion}">
+        </span>
+        <div>
+          <p class="film-details__comment-text">${comment.text}</p>
+          <p class="film-details__comment-info">
+              <span class="film-details__comment-author">${comment.author}</span>
+              <span class="film-details__comment-day">${getHumanDateTime(comment.date)}</span>
+              <button class="film-details__comment-delete">Delete</button>
+          </p>
+        </div>
+      </li>`), ''
+  );
+
+  return commentsLayout;
+};
+
 const createMoviePopupTemplate = (movie, comments) => {
   const {poster, title, originalTitle, rating, director, writers, stars, releaseDate, runningTime, country, genres, fullDescription, ageRestriction} = movie;
-
-  const createGenresLayout = (arr) => {
-    let result = '';
-
-    arr.forEach((genre) => {
-      result =
-        `${result}
-        <span class="film-details__genre">${genre}</span>`;
-    });
-
-    return result;
-  };
-
-  const createCommentsLayout = (arr) => {
-    let result = '';
-
-    arr.forEach((comment) => {
-      result =
-        `${result}
-        <li class="film-details__comment">
-          <span class="film-details__comment-emoji">
-            <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-${comment.emotion}">
-          </span>
-          <div>
-            <p class="film-details__comment-text">${comment.text}</p>
-            <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${comment.author}</span>
-                <span class="film-details__comment-day">${getHumanDateTime(comment.date)}</span>
-                <button class="film-details__comment-delete">Delete</button>
-            </p>
-          </div>
-        </li>`;
-    });
-
-    return result;
-  };
 
   return (
     `<section class="film-details">

@@ -1,5 +1,5 @@
 import {getRandomInteger} from '../utils.js';
-import {getRandomElement} from '../utils.js';
+import {getRandomArrayElements} from '../utils.js';
 import dayjs from 'dayjs';
 
 let currentId = 0;
@@ -38,8 +38,8 @@ const generateDate = () => {
 
 export const generateComment = () => ({
   id: generateCommentId(),
-  text: getRandomElement(TEXTS),
-  emotion: getRandomElement(EMOTIONS),
-  author: getRandomElement(AUTHORS),
+  text: getRandomArrayElements(TEXTS)[0],
+  emotion: getRandomArrayElements(EMOTIONS)[0],
+  author: getRandomArrayElements(AUTHORS)[0],
   date: generateDate()
 });

@@ -1,6 +1,6 @@
 import {getRandomInteger} from '../utils.js';
 import {getRandomDecimal} from '../utils.js';
-import {getRandomElement} from '../utils.js';
+import {getRandomArrayElements} from '../utils.js';
 import dayjs from 'dayjs';
 
 let currentId = 0;
@@ -77,17 +77,17 @@ const generateMovieId = () => {
 export const generateMovie = () => ({
   id: generateMovieId(),
   poster: `https://picsum.photos/id/${getRandomInteger(1, 1000)}/232/342`,
-  title: getRandomElement(TITLES),
-  originalTitle: getRandomElement(TITLES),
+  title: getRandomArrayElements(TITLES)[0],
+  originalTitle: getRandomArrayElements(TITLES)[0],
   rating: getRandomDecimal(1, 9, 2),
-  director: getRandomElement(PEOPLE),
-  writers: getRandomElement(PEOPLE),
-  stars: getRandomElement(PEOPLE),
+  director: getRandomArrayElements(PEOPLE)[0],
+  writers: getRandomArrayElements(PEOPLE)[0],
+  stars: getRandomArrayElements(PEOPLE)[0],
   releaseDate: generateDate(),
   runningTime: generateRunningTime(),
-  country: getRandomElement(COUNTRIES),
-  genres: getRandomElement(GENRES, getRandomInteger(2, 4)),
-  fullDescription: getRandomElement(DESCRIPTIONS),
-  ageRestriction: getRandomElement(AGES),
+  country: getRandomArrayElements(COUNTRIES)[0],
+  genres: getRandomArrayElements(GENRES, getRandomInteger(1, 4)),
+  fullDescription: getRandomArrayElements(DESCRIPTIONS)[0],
+  ageRestriction: getRandomArrayElements(AGES)[0],
   comments: Array.from({length: getRandomInteger(0, 4)}, () => getRandomInteger(1, 20))
 });
