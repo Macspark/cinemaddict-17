@@ -1,5 +1,4 @@
-import {getRandomInteger} from '../utils.js';
-import {getRandomArrayElements} from '../utils.js';
+import {getRandomInteger, getRandomArrayElements} from '../utils.js';
 import dayjs from 'dayjs';
 
 let currentId = 0;
