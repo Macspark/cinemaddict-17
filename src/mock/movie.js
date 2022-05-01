@@ -3,6 +3,8 @@ import {getRandomDecimal} from '../utils.js';
 import {getRandomElement} from '../utils.js';
 import dayjs from 'dayjs';
 
+let currentId = 0;
+
 const DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget. Cras aliquet varius magna, non porta ligula feugiat eget.',
@@ -67,7 +69,13 @@ const generateRunningTime = () => {
   return `${(hours !== '0h' ? hours : '')} ${(minutes !== '0m' ? minutes : '')}`;
 };
 
+const generateMovieId = () => {
+  currentId++;
+  return currentId - 1;
+};
+
 export const generateMovie = () => ({
+  id: generateMovieId(),
   poster: `https://picsum.photos/id/${getRandomInteger(1, 1000)}/232/342`,
   title: getRandomElement(TITLES),
   originalTitle: getRandomElement(TITLES),
@@ -80,5 +88,6 @@ export const generateMovie = () => ({
   country: getRandomElement(COUNTRIES),
   genres: getRandomElement(GENRES, getRandomInteger(2, 4)),
   fullDescription: getRandomElement(DESCRIPTIONS),
-  ageRestriction: getRandomElement(AGES)
+  ageRestriction: getRandomElement(AGES),
+  comments: Array.from({length: getRandomInteger(0, 4)}, () => getRandomInteger(1, 20))
 });

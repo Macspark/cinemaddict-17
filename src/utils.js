@@ -19,8 +19,10 @@ const getRandomElement = (arr, amount = 1) => {
   return amount === 1 ? result[0] : result;
 };
 
-const getYear = (date) => dayjs(date).format('YYYY');
+const getYear = (date) => date ? dayjs(date).format('YYYY') : '';
 
-const getHumanDate = (date) => dayjs(date).format('DD MMMM YYYY');
+const getHumanDate = (date) => date ? dayjs(date).format('DD MMMM YYYY') : '';
 
-export {getRandomInteger, getRandomDecimal, getRandomElement, getYear, getHumanDate};
+const getHumanDateTime = (date) => date ? dayjs(date).format('YYYY/MM/DD hh:mm') : '';
+
+export {getRandomInteger, getRandomDecimal, getRandomElement, getYear, getHumanDate, getHumanDateTime};

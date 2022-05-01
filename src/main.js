@@ -3,27 +3,29 @@ import UserView from './view/user.js';
 import NavigationView from './view/navigation.js';
 import SortView from './view/sort.js';
 import StatisticsView from './view/statistics.js';
-import MoviePopupView from './view/movie-popup.js';
 import BoardPresenter from './presenter/board-presenter.js';
 
 import MoviesModel from './model/movies-model.js';
+import CommentModel from './model/comments-model.js';
 
 const movieModel = new MoviesModel();
-const siteHeader = document.querySelector('.header');
-const siteMain = document.querySelector('.main');
-const siteFooter = document.querySelector('.footer');
+const commentModel = new CommentModel();
+
+const EntryPoints = {
+  HEADER: document.querySelector('.header'),
+  MAIN: document.querySelector('.main'),
+  FOOTER: document.querySelector('.footer')
+};
+
 const boardPresenter = new BoardPresenter();
 
-render(new UserView(), siteHeader);
-render(new NavigationView(), siteMain);
-render(new SortView(), siteMain);
+render(new UserView(), EntryPoints.HEADER);
+render(new NavigationView(), EntryPoints.MAIN);
+render(new SortView(), EntryPoints.MAIN);
 
-boardPresenter.init(siteMain, movieModel);
+boardPresenter.init(EntryPoints, movieModel, commentModel);
 
-render(new StatisticsView(), siteFooter);
-
+render(new StatisticsView(), EntryPoints.FOOTER);
 
 // TEMP
-const moviePopupView = new MoviePopupView(movieModel.getMovies()[0]);
-render(moviePopupView, siteFooter, 'afterend');
-document.addEventListener('click', () => document.querySelector('.film-details').remove());
+boardPresenter.createPopup(movieModel.getMovies()[0]);
