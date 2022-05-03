@@ -9,19 +9,25 @@ const createMovieListTemplate = () => (
 );
 
 export default class MovieListView {
-  getTemplate() {
+  #element;
+
+  get template() {
     return createMovieListTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
+  }
+
+  get container() {
+    return this.element.querySelector('.films-list__container');
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
