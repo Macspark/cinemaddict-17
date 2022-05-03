@@ -9,23 +9,29 @@ const createMovieListExtraTemplate = (title) => (
 );
 
 export default class MovieListExtraView {
+  #element;
+
   constructor(title) {
     this._title = title;
   }
 
-  getTemplate() {
+  get template() {
     return createMovieListExtraTemplate(this._title);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
+  }
+
+  get container() {
+    return this.element.querySelector('.films-list__container');
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

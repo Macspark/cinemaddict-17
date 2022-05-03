@@ -26,6 +26,3 @@ render(new SortView(), EntryPoints.MAIN);
 boardPresenter.init(EntryPoints, movieModel, commentModel);
 
 render(new StatisticsView(), EntryPoints.FOOTER);
-
-// TEMP
-boardPresenter.createPopup(movieModel.getMovies()[0]);
