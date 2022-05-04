@@ -10,13 +10,14 @@ const createMovieListExtraTemplate = (title) => (
 
 export default class MovieListExtraView {
   #element;
+  #title;
 
   constructor(title) {
-    this._title = title;
+    this.#title = title;
   }
 
   get template() {
-    return createMovieListExtraTemplate(this._title);
+    return createMovieListExtraTemplate(this.#title);
   }
 
   get element() {

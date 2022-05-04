@@ -1,12 +1,12 @@
 import {render, RenderPosition} from '../render.js';
+import {TOP_MOVIES, MOVIES_COUNT_PER_STEP} from '../consts.js';
 import MovieContainerView from '../view/movie-container.js';
 import MovieListView from '../view/movie-list.js';
 import MovieListExtraView from '../view/movie-list-extra.js';
 import MovieCardView from '../view/movie-card.js';
+import MovieEmptyView from '../view/movie-empty.js';
 import MoviePopupView from '../view/movie-popup.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
-
-const TOP_MOVIES = 2;
 
 export default class BoardPresenter {
   #EntryPoints;
@@ -14,25 +14,39 @@ export default class BoardPresenter {
   #commentModel;
   #boardMovies;
   #boardComments;
+  #renderedMoviesCount = MOVIES_COUNT_PER_STEP;
+  #moviePopupView = null;
 
   #boardMovieListMainComponent = new MovieContainerView();
   #movieListMainContainerComponent = new MovieListView();
   #movieListByRatingContainerComponent = new MovieListExtraView('Top rated');
   #movieListByCommentsContainerComponent = new MovieListExtraView('Most comments');
+  #showMoreButtonView = new ShowMoreButtonView();
 
-  #moviePopupView = null;
-
-  init(EntryPoints, movieModel, commentModel) {
+  constructor(EntryPoints, movieModel, commentModel) {
     this.#EntryPoints = EntryPoints;
     this.#movieModel = movieModel;
     this.#commentModel = commentModel;
+  }
+
+  init = () => {
     this.#boardMovies = [...this.#movieModel.movies];
     this.#boardComments = [...this.#commentModel.comments];
 
+    this.#renderBoard();
+  };
+
+  #renderBoard = () => {
     render(this.#boardMovieListMainComponent, this.#EntryPoints.MAIN);
+
+    if (!this.#boardMovies.length) {
+      render(new MovieEmptyView(), this.#boardMovieListMainComponent.element);
+      return;
+    }
+
     render(this.#movieListMainContainerComponent, this.#boardMovieListMainComponent.element);
 
-    for (let i = 0; i < this.#boardMovies.length; i++) {
+    for (let i = 0; i < Math.min(this.#boardMovies.length, MOVIES_COUNT_PER_STEP); i++) {
       this.#renderMovieCard(this.#boardMovies[i], this.#movieListMainContainerComponent.container);
     }
 
@@ -46,10 +60,13 @@ export default class BoardPresenter {
       this.#renderMovieCard(this.#boardMovies[i], this.#movieListByCommentsContainerComponent.container);
     }
 
-    render(new ShowMoreButtonView(), this.#movieListMainContainerComponent.container, RenderPosition.AFTEREND);
-  }
+    if (this.#boardMovies.length >= this.#renderedMoviesCount) {
+      render(this.#showMoreButtonView, this.#movieListMainContainerComponent.container, RenderPosition.AFTEREND);
+      this.#showMoreButtonView.element.addEventListener('click', this.#handleShowMoreButtonClick);
+    }
+  };
 
-  #renderMovieCard(movie, place){
+  #renderMovieCard = (movie, place) => {
     const movieComponent = new MovieCardView(movie);
 
     const closePopup = () => {
@@ -97,5 +114,19 @@ export default class BoardPresenter {
     });
 
     render(movieComponent, place);
-  }
+  };
+
+  #handleShowMoreButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#boardMovies
+      .slice(this.#renderedMoviesCount, this.#renderedMoviesCount + MOVIES_COUNT_PER_STEP)
+      .forEach((movie) => this.#renderMovieCard(movie, this.#movieListMainContainerComponent.container));
+
+    this.#renderedMoviesCount += MOVIES_COUNT_PER_STEP;
+
+    if (this.#renderedMoviesCount >= this.#boardMovies.length) {
+      this.#showMoreButtonView.element.remove();
+      this.#showMoreButtonView.removeElement();
+    }
+  };
 }
