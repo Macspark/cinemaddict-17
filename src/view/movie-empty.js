@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createMovieListExtraTemplate = (filter = 'all') => {
   const FILTERS = {
@@ -15,27 +15,15 @@ const createMovieListExtraTemplate = (filter = 'all') => {
   );
 };
 
-export default class MovieListExtraView {
-  #element;
+export default class MovieListExtraView extends AbstractView {
   #filter;
 
   constructor(filter) {
+    super();
     this.#filter = filter;
   }
 
   get template() {
     return createMovieListExtraTemplate(this.#filter);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

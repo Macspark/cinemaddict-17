@@ -1,10 +1,14 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {getHumanDate, getHumanDateTime} from '../utils.js';
 
-const createGenresLayout = (arr) => {
+const createGenresLayout = (genres) => {
   let result = '';
 
-  arr.forEach((genre) => {
+  if (!genres || !genres.length) {
+    return;
+  }
+
+  genres.forEach((genre) => {
     result =
       `${result}
       <span class="film-details__genre">${genre}</span>`;
@@ -14,6 +18,10 @@ const createGenresLayout = (arr) => {
 };
 
 const createCommentsLayout = (arr) => {
+  if (!arr || !arr.length) {
+    return;
+  }
+
   const commentsLayout = arr.reduce((result, comment) => (
     `${result}
     <li class="film-details__comment">
@@ -124,7 +132,7 @@ const createMoviePopupTemplate = (movie, comments) => {
 
             <div class="film-details__bottom-container">
               <section class="film-details__comments-wrap">
-                <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+                <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments && comments.length ? comments.length : '0'}</span></h3>
 
                 <ul class="film-details__comments-list">
                   ${createCommentsLayout(comments)}
@@ -166,12 +174,12 @@ const createMoviePopupTemplate = (movie, comments) => {
   );
 };
 
-export default class MoviePopupView {
-  #element;
+export default class MoviePopupView extends AbstractView {
   #movie;
   #comments;
 
   constructor(movie, comments) {
+    super();
     this.#movie = movie;
     this.#comments = comments;
   }
@@ -180,19 +188,17 @@ export default class MoviePopupView {
     return createMoviePopupTemplate(this.#movie, this.#comments);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
   get closeButton() {
     return this.element.querySelector('.film-details__close-btn');
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.closeButton.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

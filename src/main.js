@@ -1,4 +1,4 @@
-import {render} from './render.js';
+import {render} from './framework/render.js';
 import UserView from './view/user.js';
 import NavigationView from './view/navigation.js';
 import SortView from './view/sort.js';
