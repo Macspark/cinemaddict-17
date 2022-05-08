@@ -6,7 +6,7 @@ import MovieListExtraView from '../view/movie-list-extra.js';
 import MovieCardView from '../view/movie-card.js';
 import MovieEmptyView from '../view/movie-empty.js';
 import MoviePopupView from '../view/movie-popup.js';
-import showMoreButtonViewComponent from '../view/show-more-button.js';
+import ShowMoreButtonView from '../view/show-more-button.js';
 
 export default class BoardPresenter {
   #EntryPoints;
@@ -22,7 +22,7 @@ export default class BoardPresenter {
   #movieListMainContainerComponent = new MovieListView();
   #movieListByRatingContainerComponent = new MovieListExtraView('Top rated');
   #movieListByCommentsContainerComponent = new MovieListExtraView('Most comments');
-  #showMoreButtonViewComponent = new showMoreButtonViewComponent();
+  #showMoreButtonViewComponent = new ShowMoreButtonView();
 
   constructor(EntryPoints, movieModel, commentModel) {
     this.#EntryPoints = EntryPoints;
