@@ -3,7 +3,7 @@ import {getHumanDate, getHumanDateTime} from '../utils.js';
 
 const createGenresLayout = (genres) => {
   if (!genres || !genres.length) {
-    return;
+    return '';
   }
 
   const genresLayout = genres.reduce((result, genre) => (
@@ -16,7 +16,7 @@ const createGenresLayout = (genres) => {
 
 const createCommentsLayout = (comments) => {
   if (!comments || !comments.length) {
-    return;
+    return '';
   }
 
   const commentsLayout = comments.reduce((result, comment) => (
