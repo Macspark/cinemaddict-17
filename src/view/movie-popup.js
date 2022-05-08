@@ -2,27 +2,24 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {getHumanDate, getHumanDateTime} from '../utils.js';
 
 const createGenresLayout = (genres) => {
-  let result = '';
-
   if (!genres || !genres.length) {
     return;
   }
 
-  genres.forEach((genre) => {
-    result =
-      `${result}
-      <span class="film-details__genre">${genre}</span>`;
-  });
+  const genresLayout = genres.reduce((result, genre) => (
+    `${result}
+      <span class="film-details__genre">${genre}</span>`), ''
+  );
 
-  return result;
+  return genresLayout;
 };
 
-const createCommentsLayout = (arr) => {
-  if (!arr || !arr.length) {
+const createCommentsLayout = (comments) => {
+  if (!comments || !comments.length) {
     return;
   }
 
-  const commentsLayout = arr.reduce((result, comment) => (
+  const commentsLayout = comments.reduce((result, comment) => (
     `${result}
     <li class="film-details__comment">
         <span class="film-details__comment-emoji">
