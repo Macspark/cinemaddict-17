@@ -16,13 +16,12 @@ export default class BoardPresenter {
   #boardComments;
   #renderedMoviesCount = MOVIES_COUNT_PER_STEP;
 
-  #moviePopupView = new MoviePopupView({});
-
   #boardMovieListMainComponent = new MovieContainerView();
   #movieListMainContainerComponent = new MovieListView();
   #movieListByRatingContainerComponent = new MovieListExtraView('Top rated');
   #movieListByCommentsContainerComponent = new MovieListExtraView('Most comments');
   #showMoreButtonViewComponent = new ShowMoreButtonView();
+  #moviePopupView = null;
 
   constructor(EntryPoints, movieModel, commentModel) {
     this.#EntryPoints = EntryPoints;
@@ -51,7 +50,9 @@ export default class BoardPresenter {
   };
 
   #renderPopup = (movie) => {
-    this.#closePopup();
+    if (this.#moviePopupView) {
+      this.#closePopup();
+    }
 
     const popupComments = movie.comments.length
       ? movie.comments.map((commentId) =>
