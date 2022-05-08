@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {getYear} from '../utils.js';
 
 const createMovieCardTemplate = (movie) => {
@@ -41,11 +41,11 @@ const createMovieCardTemplate = (movie) => {
   );
 };
 
-export default class MovieCardView {
-  #element;
+export default class MovieCardView extends AbstractView {
   #movie;
 
   constructor(movie) {
+    super();
     this.#movie = movie;
   }
 
@@ -53,19 +53,17 @@ export default class MovieCardView {
     return createMovieCardTemplate(this.#movie);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
   get cardBody() {
     return this.element.querySelector('.film-card__link');
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.cardBody.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

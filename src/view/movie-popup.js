@@ -1,20 +1,25 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {getHumanDate, getHumanDateTime} from '../utils.js';
 
-const createGenresLayout = (arr) => {
-  let result = '';
+const createGenresLayout = (genres) => {
+  if (!genres || !genres.length) {
+    return '';
+  }
 
-  arr.forEach((genre) => {
-    result =
-      `${result}
-      <span class="film-details__genre">${genre}</span>`;
-  });
+  const genresLayout = genres.reduce((result, genre) => (
+    `${result}
+      <span class="film-details__genre">${genre}</span>`
+  ), '');
 
-  return result;
+  return genresLayout;
 };
 
-const createCommentsLayout = (arr) => {
-  const commentsLayout = arr.reduce((result, comment) => (
+const createCommentsLayout = (comments) => {
+  if (!comments || !comments.length) {
+    return '';
+  }
+
+  const commentsLayout = comments.reduce((result, comment) => (
     `${result}
     <li class="film-details__comment">
         <span class="film-details__comment-emoji">
@@ -28,8 +33,8 @@ const createCommentsLayout = (arr) => {
               <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
-      </li>`), ''
-  );
+      </li>`
+  ), '');
 
   return commentsLayout;
 };
@@ -166,12 +171,12 @@ const createMoviePopupTemplate = (movie, comments) => {
   );
 };
 
-export default class MoviePopupView {
-  #element;
+export default class MoviePopupView extends AbstractView {
   #movie;
   #comments;
 
   constructor(movie, comments) {
+    super();
     this.#movie = movie;
     this.#comments = comments;
   }
@@ -180,19 +185,17 @@ export default class MoviePopupView {
     return createMoviePopupTemplate(this.#movie, this.#comments);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
   get closeButton() {
     return this.element.querySelector('.film-details__close-btn');
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.closeButton.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

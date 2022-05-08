@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createMovieListExtraTemplate = (title) => (
   `<section class="films-list films-list--extra">
@@ -8,11 +8,11 @@ const createMovieListExtraTemplate = (title) => (
   </section>`
 );
 
-export default class MovieListExtraView {
-  #element;
+export default class MovieListExtraView extends AbstractView {
   #title;
 
   constructor(title) {
+    super();
     this.#title = title;
   }
 
@@ -20,19 +20,7 @@ export default class MovieListExtraView {
     return createMovieListExtraTemplate(this.#title);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
   get container() {
     return this.element.querySelector('.films-list__container');
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

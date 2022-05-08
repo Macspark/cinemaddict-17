@@ -1,4 +1,4 @@
-import {render, RenderPosition} from '../render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import {TOP_MOVIES, MOVIES_COUNT_PER_STEP} from '../consts.js';
 import MovieContainerView from '../view/movie-container.js';
 import MovieListView from '../view/movie-list.js';
@@ -15,13 +15,13 @@ export default class BoardPresenter {
   #boardMovies;
   #boardComments;
   #renderedMoviesCount = MOVIES_COUNT_PER_STEP;
-  #moviePopupView = null;
 
   #boardMovieListMainComponent = new MovieContainerView();
   #movieListMainContainerComponent = new MovieListView();
   #movieListByRatingContainerComponent = new MovieListExtraView('Top rated');
   #movieListByCommentsContainerComponent = new MovieListExtraView('Most comments');
-  #showMoreButtonView = new ShowMoreButtonView();
+  #showMoreButtonViewComponent = new ShowMoreButtonView();
+  #moviePopupView = null;
 
   constructor(EntryPoints, movieModel, commentModel) {
     this.#EntryPoints = EntryPoints;
@@ -34,6 +34,64 @@ export default class BoardPresenter {
     this.#boardComments = [...this.#commentModel.comments];
 
     this.#renderBoard();
+  };
+
+  #onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#closePopup();
+    }
+  };
+
+  #closePopup = () => {
+    remove(this.#moviePopupView);
+    document.body.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', this.#onEscKeyDown);
+  };
+
+  #renderPopup = (movie) => {
+    if (this.#moviePopupView) {
+      this.#closePopup();
+    }
+
+    const popupComments = movie.comments.length
+      ? movie.comments.map((commentId) =>
+        this.#boardComments.find((comment) =>
+          comment.id === commentId
+        )
+      )
+      : [];
+
+    this.#moviePopupView = new MoviePopupView(movie, popupComments);
+    this.#moviePopupView.setClickHandler(() => {
+      this.#closePopup();
+    });
+
+    document.body.classList.add('hide-overflow');
+    document.addEventListener('keydown', this.#onEscKeyDown);
+    render(this.#moviePopupView, this.#EntryPoints.FOOTER, RenderPosition.AFTEREND);
+  };
+
+  #renderMovieCard = (movie, place) => {
+    const movieComponent = new MovieCardView(movie);
+
+    movieComponent.setClickHandler(() => {
+      this.#renderPopup(movie);
+    });
+
+    render(movieComponent, place);
+  };
+
+  #handleShowMoreButtonClick = () => {
+    this.#boardMovies
+      .slice(this.#renderedMoviesCount, this.#renderedMoviesCount + MOVIES_COUNT_PER_STEP)
+      .forEach((movie) => this.#renderMovieCard(movie, this.#movieListMainContainerComponent.container));
+
+    this.#renderedMoviesCount += MOVIES_COUNT_PER_STEP;
+
+    if (this.#renderedMoviesCount >= this.#boardMovies.length) {
+      remove(this.#showMoreButtonViewComponent);
+    }
   };
 
   #renderBoard = () => {
@@ -61,72 +119,8 @@ export default class BoardPresenter {
     }
 
     if (this.#boardMovies.length >= this.#renderedMoviesCount) {
-      render(this.#showMoreButtonView, this.#movieListMainContainerComponent.container, RenderPosition.AFTEREND);
-      this.#showMoreButtonView.element.addEventListener('click', this.#handleShowMoreButtonClick);
-    }
-  };
-
-  #renderMovieCard = (movie, place) => {
-    const movieComponent = new MovieCardView(movie);
-
-    const closePopup = () => {
-      this.#moviePopupView.element.remove();
-      this.#moviePopupView = null;
-      document.body.classList.remove('hide-overflow');
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        document.removeEventListener('keydown', onEscKeyDown);
-        closePopup();
-      }
-    };
-
-    const openPopup = () => {
-      if (this.#moviePopupView) {
-        document.removeEventListener('keydown', onEscKeyDown);
-        closePopup();
-      }
-
-      const popupComments = movie.comments.length
-        ? movie.comments.map((commentId) =>
-          this.#boardComments.find((comment) =>
-            comment.id === commentId
-          )
-        )
-        : [];
-
-      this.#moviePopupView = new MoviePopupView(movie, popupComments);
-      this.#moviePopupView.closeButton.addEventListener('click', (evt) => {
-        evt.preventDefault();
-        document.removeEventListener('keydown', onEscKeyDown);
-        closePopup();
-      });
-
-      document.body.classList.add('hide-overflow');
-      render(this.#moviePopupView, this.#EntryPoints.FOOTER, RenderPosition.AFTEREND);
-    };
-
-    movieComponent.cardBody.addEventListener('click', () => {
-      document.addEventListener('keydown', onEscKeyDown);
-      openPopup();
-    });
-
-    render(movieComponent, place);
-  };
-
-  #handleShowMoreButtonClick = (evt) => {
-    evt.preventDefault();
-    this.#boardMovies
-      .slice(this.#renderedMoviesCount, this.#renderedMoviesCount + MOVIES_COUNT_PER_STEP)
-      .forEach((movie) => this.#renderMovieCard(movie, this.#movieListMainContainerComponent.container));
-
-    this.#renderedMoviesCount += MOVIES_COUNT_PER_STEP;
-
-    if (this.#renderedMoviesCount >= this.#boardMovies.length) {
-      this.#showMoreButtonView.element.remove();
-      this.#showMoreButtonView.removeElement();
+      render(this.#showMoreButtonViewComponent, this.#movieListMainContainerComponent.container, RenderPosition.AFTEREND);
+      this.#showMoreButtonViewComponent.setClickHandler(this.#handleShowMoreButtonClick);
     }
   };
 }
