@@ -8,8 +8,8 @@ const createGenresLayout = (genres) => {
 
   const genresLayout = genres.reduce((result, genre) => (
     `${result}
-      <span class="film-details__genre">${genre}</span>`), ''
-  );
+      <span class="film-details__genre">${genre}</span>`
+  ), '');
 
   return genresLayout;
 };
@@ -33,8 +33,8 @@ const createCommentsLayout = (comments) => {
               <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
-      </li>`), ''
-  );
+      </li>`
+  ), '');
 
   return commentsLayout;
 };
