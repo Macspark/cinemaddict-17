@@ -1,4 +1,0 @@
-const TOP_MOVIES = 2;
-const MOVIES_COUNT_PER_STEP = 5;
-
-export {TOP_MOVIES, MOVIES_COUNT_PER_STEP};
