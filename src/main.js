@@ -1,11 +1,12 @@
 import {render} from './framework/render.js';
 import UserView from './view/user.js';
-import NavigationView from './view/navigation.js';
+import MovieFilterView from './view/movie-filter.js';
 import SortView from './view/sort.js';
 import StatisticsView from './view/statistics.js';
-import BoardPresenter from './presenter/board-presenter.js';
+import MovieListPresenter from './presenter/movie-list-presenter.js';
 import MoviesModel from './model/movies-model.js';
 import CommentModel from './model/comments-model.js';
+import {generateFilter} from './mock/filter.js';
 
 const EntryPoints = {
   HEADER: document.querySelector('.header'),
@@ -15,12 +16,13 @@ const EntryPoints = {
 
 const movieModel = new MoviesModel();
 const commentModel = new CommentModel();
-const boardPresenter = new BoardPresenter(EntryPoints, movieModel, commentModel);
+const movieListPresenter = new MovieListPresenter(EntryPoints, movieModel, commentModel);
+const filters = generateFilter(movieModel.movies);
 
 render(new UserView(), EntryPoints.HEADER);
-render(new NavigationView(), EntryPoints.MAIN);
+render(new MovieFilterView(filters), EntryPoints.MAIN);
 render(new SortView(), EntryPoints.MAIN);
 
-boardPresenter.init();
+movieListPresenter.init();
 
 render(new StatisticsView(), EntryPoints.FOOTER);

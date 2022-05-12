@@ -1,5 +1,5 @@
 import {render, remove, RenderPosition} from '../framework/render.js';
-import {TOP_MOVIES, MOVIES_COUNT_PER_STEP} from '../consts.js';
+import {TOP_MOVIES, MOVIES_COUNT_PER_STEP} from '../const.js';
 import MovieContainerView from '../view/movie-container.js';
 import MovieListView from '../view/movie-list.js';
 import MovieListExtraView from '../view/movie-list-extra.js';
@@ -8,7 +8,7 @@ import MovieEmptyView from '../view/movie-empty.js';
 import MoviePopupView from '../view/movie-popup.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 
-export default class BoardPresenter {
+export default class MovieListPresenter {
   #EntryPoints;
   #movieModel;
   #commentModel;

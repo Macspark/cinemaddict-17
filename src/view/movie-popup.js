@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {getHumanDate, getHumanDateTime} from '../utils.js';
+import {getHumanDate, getHumanDateTime} from '../utils/movie.js';
 
 const createGenresLayout = (genres) => {
   if (!genres || !genres.length) {
@@ -65,52 +65,52 @@ const createMoviePopupTemplate = (movie, comments) => {
             </div>
             <div class="film-details__info-wrap">
                 <div class="film-details__poster">
-                <img class="film-details__poster-img" src="${poster}" alt="">
+                  <img class="film-details__poster-img" src="${poster}" alt="">
 
-                <p class="film-details__age">${ageRestriction}</p>
+                  <p class="film-details__age">${ageRestriction}</p>
                 </div>
 
                 <div class="film-details__info">
                 <div class="film-details__info-head">
                     <div class="film-details__title-wrap">
-                    <h3 class="film-details__title">${title}</h3>
-                    <p class="film-details__title-original">Original: ${originalTitle}</p>
+                      <h3 class="film-details__title">${title}</h3>
+                      <p class="film-details__title-original">Original: ${originalTitle}</p>
                     </div>
 
                     <div class="film-details__rating">
-                    <p class="film-details__total-rating">${rating}</p>
+                      <p class="film-details__total-rating">${rating}</p>
                     </div>
                 </div>
 
                 <table class="film-details__table">
                     <tr class="film-details__row">
-                    <td class="film-details__term">Director</td>
-                    <td class="film-details__cell">${director}</td>
+                      <td class="film-details__term">Director</td>
+                      <td class="film-details__cell">${director}</td>
                     </tr>
                     <tr class="film-details__row">
-                    <td class="film-details__term">Writers</td>
-                    <td class="film-details__cell">${writers}</td>
+                      <td class="film-details__term">Writers</td>
+                      <td class="film-details__cell">${writers}</td>
                     </tr>
                     <tr class="film-details__row">
-                    <td class="film-details__term">Actors</td>
-                    <td class="film-details__cell">${stars}</td>
+                      <td class="film-details__term">Actors</td>
+                      <td class="film-details__cell">${stars}</td>
                     </tr>
                     <tr class="film-details__row">
-                    <td class="film-details__term">Release Date</td>
-                    <td class="film-details__cell">${getHumanDate(releaseDate)}</td>
+                      <td class="film-details__term">Release Date</td>
+                      <td class="film-details__cell">${getHumanDate(releaseDate)}</td>
                     </tr>
                     <tr class="film-details__row">
-                    <td class="film-details__term">Runtime</td>
-                    <td class="film-details__cell">${runningTime}</td>
+                      <td class="film-details__term">Runtime</td>
+                      <td class="film-details__cell">${runningTime}</td>
                     </tr>
                     <tr class="film-details__row">
-                    <td class="film-details__term">Country</td>
-                    <td class="film-details__cell">${country}</td>
+                      <td class="film-details__term">Country</td>
+                      <td class="film-details__cell">${country}</td>
                     </tr>
                     <tr class="film-details__row">
-                    <td class="film-details__term">Genres</td>
-                    <td class="film-details__cell">
-                        ${createGenresLayout(genres)}
+                      <td class="film-details__term">Genres</td>
+                      <td class="film-details__cell">
+                      ${createGenresLayout(genres)}
                     </tr>
                 </table>
 
@@ -145,7 +145,7 @@ const createMoviePopupTemplate = (movie, comments) => {
                   <div class="film-details__emoji-list">
                     <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
                     <label class="film-details__emoji-label" for="emoji-smile">
-                    <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
+                      <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
                     </label>
     
                     <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
