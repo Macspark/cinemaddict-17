@@ -2,15 +2,15 @@ import {render, remove, replace} from '../framework/render.js';
 import MovieCardView from '../view/movie-card.js';
 
 export default class CardPresenter {
-  #movieListContainer;
+  #container;
   #movie;
-  #comments = null;
+  #comments;
   #popupPresenter;
   #movieComponent = null;
   #changeData;
 
   constructor(container, popupPresenter, changeData) {
-    this.#movieListContainer = container;
+    this.#container = container;
     this.#popupPresenter = popupPresenter;
     this.#changeData = changeData;
   }
@@ -28,7 +28,7 @@ export default class CardPresenter {
     this.#movieComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
 
     if (prevMovieComponent === null) {
-      render(this.#movieComponent, this.#movieListContainer);
+      render(this.#movieComponent, this.#container);
       return;
     }
 
