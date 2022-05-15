@@ -1,21 +1,25 @@
-import {render, remove} from '../framework/render.js';
+import {render, remove, replace} from '../framework/render.js';
 import MovieCardView from '../view/movie-card.js';
 
 export default class CardPresenter {
   #movieListContainer;
   #movie;
-  #comments;
+  #comments = null;
   #popupPresenter;
-  #movieComponent;
+  #movieComponent = null;
+  #changeData;
 
-  constructor(container, popupPresenter) {
+  constructor(container, popupPresenter, changeData) {
     this.#movieListContainer = container;
     this.#popupPresenter = popupPresenter;
+    this.#changeData = changeData;
   }
 
-  init = (movie, comments) => {
+  init = (movie, comments = this.#comments) => {
     this.#movie = movie;
     this.#comments = comments;
+
+    const prevMovieComponent = this.#movieComponent;
 
     this.#movieComponent = new MovieCardView(movie);
     this.#movieComponent.setCardClickHandler(this.#handleMovieCardClick);
@@ -23,7 +27,14 @@ export default class CardPresenter {
     this.#movieComponent.setWatchedClickHandler(this.#handleWatchedClick);
     this.#movieComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
 
-    render(this.#movieComponent, this.#movieListContainer);
+    if (prevMovieComponent === null) {
+      render(this.#movieComponent, this.#movieListContainer);
+      return;
+    }
+
+    replace(this.#movieComponent, prevMovieComponent)
+
+    remove(prevMovieComponent);
   };
 
   destroy = () => {
@@ -35,14 +46,14 @@ export default class CardPresenter {
   };
 
   #handleWatchlistClick = () => {
-    console.log('watchlist');
+    this.#changeData({...this.#movie, isWatchlist: !this.#movie.isWatchlist});
   };
 
   #handleWatchedClick = () => {
-    console.log('watched');
+    this.#changeData({...this.#movie, isWatched: !this.#movie.isWatched});
   };
 
   #handleFavoriteClick = () => {
-    console.log('fav');
+    this.#changeData({...this.#movie, isFavorite: !this.#movie.isFavorite});
   };
 }
