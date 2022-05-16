@@ -32,8 +32,7 @@ export default class CardPresenter {
       return;
     }
 
-    replace(this.#movieComponent, prevMovieComponent)
-
+    replace(this.#movieComponent, prevMovieComponent);
     remove(prevMovieComponent);
   };
 

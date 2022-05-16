@@ -12,12 +12,8 @@ const updateItem = (items, update) => {
   ];
 };
 
-const sortMoviesByComments = (movieA, movieB) => {
-  return movieB.comments.length - movieA.comments.length;
-}
+const sortMoviesByComments = (movieA, movieB) => movieB.comments.length - movieA.comments.length;
 
-const sortMoviesByRating = (movieA, movieB) => {
-  return movieB.rating - movieA.rating;
-}
+const sortMoviesByRating = (movieA, movieB) => movieB.rating - movieA.rating;
 
 export {updateItem, sortMoviesByRating, sortMoviesByComments};

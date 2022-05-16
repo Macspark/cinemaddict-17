@@ -1,4 +1,4 @@
-import {render, replace, remove, RenderPosition} from '../framework/render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import MoviePopupView from '../view/movie-popup.js';
 
 export default class PopupPresenter {
