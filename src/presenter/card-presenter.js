@@ -1,34 +1,30 @@
 import {render, remove, replace} from '../framework/render.js';
 import MovieCardView from '../view/movie-card.js';
+import AbstractCardPresenter from './abstract-card-presenter.js';
 
-export default class CardPresenter {
-  #container;
-  #movie;
-  #comments;
-  #popupPresenter;
+export default class CardPresenter extends AbstractCardPresenter {
   #movieComponent = null;
-  #changeData;
+  #popupPresenter;
 
   constructor(container, popupPresenter, changeData) {
-    this.#container = container;
+    super(container, changeData);
     this.#popupPresenter = popupPresenter;
-    this.#changeData = changeData;
   }
 
-  init = (movie, comments = this.#comments) => {
-    this.#movie = movie;
-    this.#comments = comments;
+  init = (movie, comments = this._comments) => {
+    this._movie = movie;
+    this._comments = comments;
 
     const prevMovieComponent = this.#movieComponent;
 
     this.#movieComponent = new MovieCardView(movie);
     this.#movieComponent.setCardClickHandler(this.#handleMovieCardClick);
-    this.#movieComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
-    this.#movieComponent.setWatchedClickHandler(this.#handleWatchedClick);
-    this.#movieComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#movieComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this.#movieComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this.#movieComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     if (prevMovieComponent === null) {
-      render(this.#movieComponent, this.#container);
+      render(this.#movieComponent, this._container);
       return;
     }
 
@@ -41,18 +37,6 @@ export default class CardPresenter {
   };
 
   #handleMovieCardClick = () => {
-    this.#popupPresenter.init(this.#movie, this.#comments);
-  };
-
-  #handleWatchlistClick = () => {
-    this.#changeData({...this.#movie, isWatchlist: !this.#movie.isWatchlist});
-  };
-
-  #handleWatchedClick = () => {
-    this.#changeData({...this.#movie, isWatched: !this.#movie.isWatched});
-  };
-
-  #handleFavoriteClick = () => {
-    this.#changeData({...this.#movie, isFavorite: !this.#movie.isFavorite});
+    this.#popupPresenter.init(this._movie, this._comments);
   };
 }

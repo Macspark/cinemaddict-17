@@ -41,7 +41,7 @@ export default class ListPresenter {
     this.#sourcedListMovies = [...this.#movieModel.movies];
     this.#listComments = [...this.#commentModel.comments];
 
-    this.#renderBoard();
+    this.#renderList();
   };
 
   #getMovieComments = (movie) => {
@@ -125,11 +125,8 @@ export default class ListPresenter {
 
   #renderMovieLists = () => {
     render(this.#movieListComponent, this.#movieListBodyComponent.element);
-    this.#renderMovieCards(
-      0,
-      Math.min(this.#listMovies.length, MOVIES_COUNT_PER_STEP)
-    );
 
+    this.#renderMovieCards(0, Math.min(this.#listMovies.length, MOVIES_COUNT_PER_STEP));
     this.#renderTopRatedMovies();
     this.#renderMostCommentedMovies();
 
@@ -138,7 +135,7 @@ export default class ListPresenter {
     }
   };
 
-  #renderBoard = () => {
+  #renderList = () => {
     render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
 
     if (!this.#listMovies.length) {
