@@ -3,7 +3,7 @@ import UserView from './view/user.js';
 import MovieFilterView from './view/movie-filter.js';
 import SortView from './view/sort.js';
 import StatisticsView from './view/statistics.js';
-import MovieListPresenter from './presenter/movie-list-presenter.js';
+import ListPresenter from './presenter/list-presenter.js';
 import MoviesModel from './model/movies-model.js';
 import CommentModel from './model/comments-model.js';
 import {generateFilter} from './mock/filter.js';
@@ -16,7 +16,7 @@ const EntryPoints = {
 
 const movieModel = new MoviesModel();
 const commentModel = new CommentModel();
-const movieListPresenter = new MovieListPresenter(EntryPoints, movieModel, commentModel);
+const movieListPresenter = new ListPresenter(EntryPoints, movieModel, commentModel);
 const filters = generateFilter(movieModel.movies);
 
 render(new UserView(), EntryPoints.HEADER);

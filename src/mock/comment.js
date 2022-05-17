@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomArrayElement} from '../utils/movie.js';
+import {getRandomInteger, getRandomArrayElement} from '../utils/common.js';
 import dayjs from 'dayjs';
 
 let currentId = 0;

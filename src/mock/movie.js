@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements} from '../utils/movie.js';
+import {getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements} from '../utils/common.js';
 import dayjs from 'dayjs';
 
 let currentId = 0;
@@ -88,7 +88,7 @@ export const generateMovie = () => ({
   fullDescription: getRandomArrayElement(DESCRIPTIONS),
   ageRestriction: getRandomArrayElement(AGES),
   comments: Array.from({length: getRandomInteger(0, 4)}, () => getRandomInteger(1, 20)),
-  isToWatch: Boolean(getRandomInteger(0, 1)),
+  isWatchlist: Boolean(getRandomInteger(0, 1)),
   isWatched: Boolean(getRandomInteger(0, 1)),
   isFavorite: Boolean(getRandomInteger(0, 1))
 });
