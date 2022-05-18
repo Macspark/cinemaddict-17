@@ -1,8 +1,8 @@
 import {render, remove, RenderPosition} from '../framework/render.js';
 import MoviePopupView from '../view/movie-popup.js';
-import AbstractCardPresenter from './abstract-card-presenter.js';
+import AbstractMoviePresenter from './abstract-movie-presenter.js';
 
-export default class PopupPresenter extends AbstractCardPresenter {
+export default class PopupPresenter extends AbstractMoviePresenter {
   #popupComponent = null;
   #popupActive = false;
 

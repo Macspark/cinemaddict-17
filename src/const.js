@@ -22,5 +22,11 @@ const FilterEmptyText = {
   [FilterType.FAVORITES]: 'There are no favorite movies now'
 };
 
-export {TOP_MOVIES, MOVIES_COUNT_PER_STEP, FilterType, FilterName, FilterEmptyText};
+const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
+
+export {TOP_MOVIES, MOVIES_COUNT_PER_STEP, FilterType, FilterName, FilterEmptyText, SortType};
 
