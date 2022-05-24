@@ -1,25 +1,27 @@
 import {render, remove, RenderPosition} from '../framework/render.js';
-import {TOP_MOVIES, MOVIES_COUNT_PER_STEP} from '../const.js';
-import {updateItem, sortMoviesByRating, sortMoviesByComments} from '../utils/movie.js';
+import {TOP_MOVIES, MOVIES_COUNT_PER_STEP, SortType} from '../const.js';
+import {updateItem, sortMoviesByRating, sortMoviesByComments, sortMoviesByDate} from '../utils/movie.js';
 import MovieContainerView from '../view/movie-container.js';
 import MovieListView from '../view/movie-list.js';
 import MovieListExtraView from '../view/movie-list-extra.js';
 import MovieEmptyView from '../view/movie-empty.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
-import CardPresenter from './card-presenter.js';
+import SortView from '../view/sort.js';
+import MoviePresenter from './movie-presenter.js';
 import PopupPresenter from './popup-presenter.js';
 
-export default class ListPresenter {
+export default class BoardPresenter {
   #EntryPoints;
   #movieModel;
   #commentModel;
   #listMovies;
+  #currentSortType = SortType.DEFAULT;
   #sourcedListMovies;
   #listComments;
   #renderedMoviesCount = MOVIES_COUNT_PER_STEP;
-  #cardPresenter = new Map();
-  #cardTopRatedPresenter = new Map();
-  #cardMostCommentedPresenter = new Map();
+  #moviePresenter = new Map();
+  #movieTopRatedPresenter = new Map();
+  #movieMostCommentedPresenter = new Map();
 
   #movieListBodyComponent = new MovieContainerView();
   #movieListComponent = new MovieListView();
@@ -27,6 +29,7 @@ export default class ListPresenter {
   #movieListExtraCommentsComponent = new MovieListExtraView('Most comments');
   #movieEmptyComponent = new MovieEmptyView();
   #showMoreButtonComponent = new ShowMoreButtonView();
+  #movieSortComponent = new SortView();
   #popupPresenter;
 
   constructor(EntryPoints, movieModel, commentModel) {
@@ -41,7 +44,7 @@ export default class ListPresenter {
     this.#sourcedListMovies = [...this.#movieModel.movies];
     this.#listComments = [...this.#commentModel.comments];
 
-    this.#renderList();
+    this.#renderBoard();
   };
 
   #getMovieComments = (movie) => {
@@ -57,23 +60,23 @@ export default class ListPresenter {
 
   #renderMovieCard = (movie) => {
     const comments = this.#getMovieComments(movie);
-    const cardPresenter = new CardPresenter(this.#movieListComponent.container, this.#popupPresenter, this.#handleMovieChange);
-    cardPresenter.init(movie, comments);
-    this.#cardPresenter.set(movie.id, cardPresenter);
+    const moviePresenter = new MoviePresenter(this.#movieListComponent.container, this.#popupPresenter, this.#handleMovieChange);
+    moviePresenter.init(movie, comments);
+    this.#moviePresenter.set(movie.id, moviePresenter);
   };
 
   #renderTopRatedMovieCard = (movie) => {
     const comments = this.#getMovieComments(movie);
-    const cardTopRatedPresenter = new CardPresenter(this.#movieListExtraRatingComponent.container, this.#popupPresenter, this.#handleMovieChange);
-    cardTopRatedPresenter.init(movie, comments);
-    this.#cardTopRatedPresenter.set(movie.id, cardTopRatedPresenter);
+    const movieTopRatedPresenter = new MoviePresenter(this.#movieListExtraRatingComponent.container, this.#popupPresenter, this.#handleMovieChange);
+    movieTopRatedPresenter.init(movie, comments);
+    this.#movieTopRatedPresenter.set(movie.id, movieTopRatedPresenter);
   };
 
   #renderMostCommentedMovieCard = (movie) => {
     const comments = this.#getMovieComments(movie);
-    const cardMostCommentedPresenter = new CardPresenter(this.#movieListExtraCommentsComponent.container, this.#popupPresenter, this.#handleMovieChange);
-    cardMostCommentedPresenter.init(movie, comments);
-    this.#cardMostCommentedPresenter.set(movie.id, cardMostCommentedPresenter);
+    const movieMostCommentedPresenter = new MoviePresenter(this.#movieListExtraCommentsComponent.container, this.#popupPresenter, this.#handleMovieChange);
+    movieMostCommentedPresenter.init(movie, comments);
+    this.#movieMostCommentedPresenter.set(movie.id, movieMostCommentedPresenter);
   };
 
   #renderMovieCards = (from, to) => {
@@ -123,43 +126,83 @@ export default class ListPresenter {
     }
   };
 
-  #renderMovieLists = () => {
-    render(this.#movieListComponent, this.#movieListBodyComponent.element);
-
+  #renderMainMovieList = () => {
     this.#renderMovieCards(0, Math.min(this.#listMovies.length, MOVIES_COUNT_PER_STEP));
-    this.#renderTopRatedMovies();
-    this.#renderMostCommentedMovies();
 
     if (this.#listMovies.length >= this.#renderedMoviesCount) {
       this.#renderShowMoreButton();
     }
   };
 
-  #renderList = () => {
-    render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
-
+  #renderBoard = () => {
     if (!this.#listMovies.length) {
+      render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
       this.#renderEmptyList();
+      return;
     }
 
-    this.#renderMovieLists();
+    this.#renderSort();
+    render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
+    render(this.#movieListComponent, this.#movieListBodyComponent.element);
+    this.#renderMainMovieList();
+    this.#renderTopRatedMovies();
+    this.#renderMostCommentedMovies();
   };
 
   #renderEmptyList = () => {
     render(this.#movieEmptyComponent, this.#movieListBodyComponent.element);
   };
 
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortTasks(sortType);
+    this.#clearMainMovieList();
+    this.#renderMainMovieList();
+  };
+
+  #sortTasks = (sortType) => {
+    switch (sortType) {
+      case SortType.DATE:
+        this.#listMovies.sort(sortMoviesByDate);
+        break;
+
+      case SortType.RATING:
+        this.#listMovies.sort(sortMoviesByRating);
+        break;
+
+      default:
+        this.#listMovies = [...this.#sourcedListMovies];
+    }
+
+    this.#currentSortType = sortType;
+  };
+
+  #renderSort = () => {
+    render(this.#movieSortComponent, this.#EntryPoints.MAIN);
+    this.#movieSortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+  };
+
+  #clearMainMovieList = () => {
+    this.#moviePresenter.forEach((movie) => movie.destroy());
+    this.#moviePresenter.clear();
+    this.#renderedMoviesCount = MOVIES_COUNT_PER_STEP;
+    remove(this.#showMoreButtonComponent);
+  };
+
   #handleMovieChange = (updatedMovie) => {
     this.#listMovies = updateItem(this.#listMovies, updatedMovie);
     this.#sourcedListMovies = updateItem(this.#sourcedListMovies, updatedMovie);
-    if (this.#cardPresenter.has(updatedMovie.id)) {
-      this.#cardPresenter.get(updatedMovie.id).init(updatedMovie);
+    if (this.#moviePresenter.has(updatedMovie.id)) {
+      this.#moviePresenter.get(updatedMovie.id).init(updatedMovie);
     }
-    if (this.#cardTopRatedPresenter.has(updatedMovie.id)) {
-      this.#cardTopRatedPresenter.get(updatedMovie.id).init(updatedMovie);
+    if (this.#movieTopRatedPresenter.has(updatedMovie.id)) {
+      this.#movieTopRatedPresenter.get(updatedMovie.id).init(updatedMovie);
     }
-    if (this.#cardMostCommentedPresenter.has(updatedMovie.id)) {
-      this.#cardMostCommentedPresenter.get(updatedMovie.id).init(updatedMovie);
+    if (this.#movieMostCommentedPresenter.has(updatedMovie.id)) {
+      this.#movieMostCommentedPresenter.get(updatedMovie.id).init(updatedMovie);
     }
     if (this.#popupPresenter.popupActive) {
       this.#popupPresenter.init(updatedMovie);

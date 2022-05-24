@@ -1,4 +1,4 @@
-export default class AbstractCardPresenter {
+export default class AbstractMoviePresenter {
   _container;
   _movie;
   _comments;
@@ -6,7 +6,7 @@ export default class AbstractCardPresenter {
   #changeData;
 
   constructor(container, changeData) {
-    if (new.target === AbstractCardPresenter) {
+    if (new.target === AbstractMoviePresenter) {
       throw new Error('Can\'t instantiate AbstractView, only concrete one.');
     }
     this._container = container;
