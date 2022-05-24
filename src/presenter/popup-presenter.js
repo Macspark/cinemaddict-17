@@ -12,7 +12,10 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   }
 
   init = (movie, comments = this._comments) => {
-    this.#oldPopupComponent = this.#popupComponent;
+    if (this.#popupComponent) {
+      this.#oldPopupComponent = this.#popupComponent;
+      this.#oldPopupComponent.scrollTop = this.#popupComponent.element.scrollTop;
+    }
 
     if (this.#isPopupActive) {
       this.#closePopup();
@@ -34,8 +37,9 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   restorePopup = () => {
+    this.#popupComponent.scrollTop = this.#oldPopupComponent.scrollTop;
     this.#popupComponent.restoreState(this.#oldPopupComponent.state);
-    this.#popupComponent.restorePosition(this.#oldPopupComponent.state);
+    this.#popupComponent.restorePosition();
   };
 
   #closePopup = () => {

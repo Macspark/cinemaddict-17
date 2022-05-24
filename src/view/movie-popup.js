@@ -196,6 +196,7 @@ const createMoviePopupTemplate = (movie, comments, newComment) => {
 export default class MoviePopupView extends AbstractStatefulView {
   #movie;
   #comments;
+  scrollTop;
 
   constructor(movie, comments) {
     super();
@@ -220,7 +221,6 @@ export default class MoviePopupView extends AbstractStatefulView {
 
     return comment;
   };
-
 
   restoreState = (state) => {
     this.updateElement(state);
@@ -248,25 +248,22 @@ export default class MoviePopupView extends AbstractStatefulView {
 
   #closeClickHandler = (evt) => {
     evt.preventDefault();
-    this._state.scrollTop = 0;
+    this.scrollTop = 0;
     this._callback.closeClick();
   };
 
   #watchlistClickHandler = (evt) => {
     evt.preventDefault();
-    this._state.scrollTop = this.element.scrollTop;
     this._callback.watchlistClick();
   };
 
   #watchedClickHandler = (evt) => {
     evt.preventDefault();
-    this._state.scrollTop = this.element.scrollTop;
     this._callback.watchedClick();
   };
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this._state.scrollTop = this.element.scrollTop;
     this._callback.favoriteClick();
   };
 
@@ -282,7 +279,7 @@ export default class MoviePopupView extends AbstractStatefulView {
       return;
     }
 
-    this._state.scrollTop = this.element.scrollTop;
+    this.scrollTop = this.element.scrollTop;
 
     this.updateElement({
       emoji: evt.target.value,
@@ -290,7 +287,7 @@ export default class MoviePopupView extends AbstractStatefulView {
   };
 
   restorePosition = () => {
-    this.element.scrollTop = this._state.scrollTop;
+    this.element.scrollTop = this.scrollTop;
   };
 
   _restoreHandlers = () => {
