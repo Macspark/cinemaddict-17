@@ -57,15 +57,7 @@ const generateDate = () => {
   return dayjs().add(weeksGap, 'week').toDate();
 };
 
-const generateRunningTime = () => {
-  const total = getRandomInteger(60, 240);
-  let hours = Math.floor(total / 60);
-  let minutes = total - (hours * 60);
-  hours = `${hours}h`;
-  minutes = `${minutes}m`;
-
-  return `${(hours !== '0h' ? hours : '')} ${(minutes !== '0m' ? minutes : '')}`;
-};
+const generateRunningTime = () => getRandomInteger(60, 240);
 
 const generateMovieId = () => {
   currentId++;
