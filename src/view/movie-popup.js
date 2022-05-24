@@ -226,6 +226,10 @@ export default class MoviePopupView extends AbstractStatefulView {
     this.updateElement(state);
   };
 
+  restorePosition = () => {
+    this.element.scrollTop = this.scrollTop;
+  };
+
   setCloseClickHandler = (callback) => {
     this._callback.closeClick = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
@@ -284,10 +288,6 @@ export default class MoviePopupView extends AbstractStatefulView {
     this.updateElement({
       emoji: evt.target.value,
     });
-  };
-
-  restorePosition = () => {
-    this.element.scrollTop = this.scrollTop;
   };
 
   _restoreHandlers = () => {
