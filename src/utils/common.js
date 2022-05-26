@@ -27,4 +27,14 @@ const getHumanDate = (date) => date ? dayjs(date).format('DD MMMM YYYY') : '';
 
 const getHumanDateTime = (date) => date ? dayjs(date).format('YYYY/MM/DD hh:mm') : '';
 
-export {getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements, getYear, getHumanDate, getHumanDateTime};
+const minutesToHours = (minutes) => {
+  minutes = Number(minutes);
+  const hours = Math.floor(minutes / 60);
+  minutes = Math.floor(minutes % 3600 % 60);
+
+  const hoursDisplay = hours > 0 ? `${hours}h ` : '';
+  const minutesDisplay = minutes > 0 ? `${minutes}m` : '';
+  return hoursDisplay + minutesDisplay;
+};
+
+export {getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements, getYear, getHumanDate, getHumanDateTime, minutesToHours};

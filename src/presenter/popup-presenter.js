@@ -4,14 +4,20 @@ import AbstractMoviePresenter from './abstract-movie-presenter.js';
 
 export default class PopupPresenter extends AbstractMoviePresenter {
   #popupComponent = null;
-  #popupActive = false;
+  #oldPopupComponent = null;
+  #isPopupActive = false;
 
   constructor(container, changeData) {
     super(container, changeData);
   }
 
   init = (movie, comments = this._comments) => {
-    if (this.#popupActive) {
+    if (this.#popupComponent) {
+      this.#oldPopupComponent = this.#popupComponent;
+      this.#oldPopupComponent.scrollTop = this.#popupComponent.element.scrollTop;
+    }
+
+    if (this.#isPopupActive) {
       this.#closePopup();
     }
 
@@ -27,18 +33,24 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
     render(this.#popupComponent, this._container, RenderPosition.AFTEREND);
-    this.#popupActive = true;
+    this.#isPopupActive = true;
+  };
+
+  restorePopup = () => {
+    this.#popupComponent.scrollTop = this.#oldPopupComponent.scrollTop;
+    this.#popupComponent.restoreState(this.#oldPopupComponent.state);
+    this.#popupComponent.restorePosition();
   };
 
   #closePopup = () => {
     remove(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDown);
-    this.#popupActive = false;
+    this.#isPopupActive = false;
   };
 
-  get popupActive() {
-    return this.#popupActive;
+  get isPopupActive() {
+    return this.#isPopupActive;
   }
 
   #onEscKeyDown = (evt) => {

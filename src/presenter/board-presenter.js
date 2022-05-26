@@ -18,6 +18,7 @@ export default class BoardPresenter {
   #currentSortType = SortType.DEFAULT;
   #sourcedListMovies;
   #listComments;
+  #scrollTop = 0;
   #renderedMoviesCount = MOVIES_COUNT_PER_STEP;
   #moviePresenter = new Map();
   #movieTopRatedPresenter = new Map();
@@ -204,8 +205,9 @@ export default class BoardPresenter {
     if (this.#movieMostCommentedPresenter.has(updatedMovie.id)) {
       this.#movieMostCommentedPresenter.get(updatedMovie.id).init(updatedMovie);
     }
-    if (this.#popupPresenter.popupActive) {
+    if (this.#popupPresenter.isPopupActive) {
       this.#popupPresenter.init(updatedMovie);
+      this.#popupPresenter.restorePopup();
     }
   };
 }
