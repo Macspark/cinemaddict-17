@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { getHumanRelativeTime } from '../utils/time.js';
+import he from 'he';
 
 const createPopupCommentTemplate = (comment) => (
   `<li class="film-details__comment">
@@ -7,7 +8,7 @@ const createPopupCommentTemplate = (comment) => (
       <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
     </span>
     <div>
-      <p class="film-details__comment-text">${comment.text}</p>
+      <p class="film-details__comment-text">${he.encode(comment.text)}</p>
       <p class="film-details__comment-info">
           <span class="film-details__comment-author">${comment.author}</span>
           <span class="film-details__comment-day">${getHumanRelativeTime(comment.date)}</span>
