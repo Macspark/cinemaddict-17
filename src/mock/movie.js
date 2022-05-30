@@ -69,7 +69,7 @@ const assignCommentIds = () => {
   const result = commentIds.splice(0, amount);
 
   return result;
-}
+};
 
 export const generateMovie = () => ({
   id: nanoid(),

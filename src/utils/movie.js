@@ -26,14 +26,4 @@ const sortMoviesByDate = (movieA, movieB) => {
   return weight ?? dayjs(movieB.releaseDate).diff(dayjs(movieA.releaseDate));
 };
 
-const formatMovieRunningTime = (minutes) => {
-  minutes = Number(minutes);
-  const hours = Math.floor(minutes / 60);
-  minutes = Math.floor(minutes % 3600 % 60);
-
-  const hoursDisplay = hours > 0 ? `${hours}h ` : '';
-  const minutesDisplay = minutes > 0 ? `${minutes}m` : '';
-  return hoursDisplay + minutesDisplay;
-};
-
-export {sortMoviesByRating, sortMoviesByComments, sortMoviesByDate, formatMovieRunningTime};
+export {sortMoviesByRating, sortMoviesByComments, sortMoviesByDate};

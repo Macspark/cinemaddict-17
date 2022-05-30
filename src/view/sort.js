@@ -16,7 +16,7 @@ export default class NavigationView extends AbstractView {
     super();
     this.#currentSortType = currentSortType;
   }
-  
+
   get template() {
     return createSortTemplate(this.#currentSortType);
   }

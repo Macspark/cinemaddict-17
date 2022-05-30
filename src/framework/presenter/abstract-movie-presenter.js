@@ -45,6 +45,6 @@ export default class AbstractMoviePresenter {
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
       {updatedMovie}
-    )
+    );
   };
 }

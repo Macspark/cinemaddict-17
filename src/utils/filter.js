@@ -7,9 +7,7 @@ const filter = {
   [FilterType.FAVORITES]: (movies) => movies.filter((movie) => movie.isFavorite)
 };
 
-const filterMovies = (filterType, movies) => {
-  return filter[filterType](movies);
-}
+const getFilteredMovies = (filterType, movies) => filter[filterType](movies);
 
 const getFilters = (movies) => Object.entries(filter).map(
   ([name, filterMovies]) => ({
@@ -19,4 +17,4 @@ const getFilters = (movies) => Object.entries(filter).map(
   }),
 );
 
-export {filterMovies, getFilters};
+export {getFilteredMovies, getFilters};

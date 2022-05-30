@@ -11,7 +11,7 @@ const getUserRank = (watchedMoviesCount) => {
     default:
       return '';
   }
-}
+};
 
 const createUserTemplate = (watchedMoviesCount) => (
   `<section class="header__profile profile">
@@ -22,7 +22,7 @@ const createUserTemplate = (watchedMoviesCount) => (
 
 export default class UserView extends AbstractView {
   #watchedMoviesCount = 0;
-  
+
   constructor(watchedMoviesCount) {
     super();
     this.#watchedMoviesCount = watchedMoviesCount;

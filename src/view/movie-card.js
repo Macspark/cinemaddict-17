@@ -1,6 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getYear } from '../utils/common.js';
-import { formatMovieRunningTime } from '../utils/movie.js';
+import { getYear, formatMovieRunningTime } from '../utils/time.js';
 
 const createMovieCardTemplate = (movie) => {
   const {

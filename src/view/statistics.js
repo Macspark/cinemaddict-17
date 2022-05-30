@@ -9,6 +9,7 @@ export default class StatisticsView extends AbstractView {
     super();
     this.#movieCount = movieCount;
   }
+
   get template() {
     return createStatisticsTemplate(this.#movieCount);
   }

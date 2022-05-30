@@ -9,12 +9,12 @@ export default class FilterPresenter {
   #filterComponent = null;
   #filterModel;
   #currentFilter;
-  
+
   constructor(entryPoint, movieModel, filterModel) {
     this.#entryPoint = entryPoint;
     this.#movieModel = movieModel;
     this.#filterModel = filterModel;
-    
+
     this.#movieModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -23,7 +23,7 @@ export default class FilterPresenter {
     const movies = this.#movieModel.movies;
     const filters = getFilters(movies);
     const oldFilterComponent = this.#filterComponent;
-    
+
     this.#currentFilter = this.#filterModel.currentFilter;
     this.#filterComponent = new MovieFilterView(filters, this.#currentFilter);
     this.#filterComponent.setFilterClickHandler(this.#handleFilterChange);
@@ -39,9 +39,9 @@ export default class FilterPresenter {
 
   #handleFilterChange = (newFilter) => {
     this.#filterModel.setFilter(UpdateType.MAJOR, newFilter);
-  }
+  };
 
   #handleModelEvent = () => {
     this.init();
-  }
+  };
 }

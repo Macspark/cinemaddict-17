@@ -9,7 +9,7 @@ import ShowMoreButtonView from '../view/show-more-button.js';
 import SortView from '../view/sort.js';
 import MoviePresenter from './movie-presenter.js';
 import PopupPresenter from './popup-presenter.js';
-import { filterMovies } from '../utils/filter.js';
+import { getFilteredMovies } from '../utils/filter.js';
 import UserView from '../view/user.js';
 
 export default class BoardPresenter {
@@ -50,9 +50,9 @@ export default class BoardPresenter {
     this.#renderBoard();
   };
 
-  get movies() {    
+  get movies() {
     const filterType = this.#filterModel.currentFilter;
-    const filteredMovies = filterMovies(filterType, this.#movieModel.movies);
+    const filteredMovies = getFilteredMovies(filterType, this.#movieModel.movies);
 
     switch (this.#currentSortType) {
       case SortType.DATE:
@@ -81,8 +81,8 @@ export default class BoardPresenter {
 
   #renderUser = () => {
     const oldUserComponent = this.#userComponent;
-    const watchedMoviesCount = filterMovies(FilterType.HISTORY, this.#movieModel.movies).length;
-    
+    const watchedMoviesCount = getFilteredMovies(FilterType.HISTORY, this.#movieModel.movies).length;
+
     this.#userComponent = new UserView(watchedMoviesCount);
 
     if (oldUserComponent === null) {
@@ -92,11 +92,11 @@ export default class BoardPresenter {
 
     replace(this.#userComponent, oldUserComponent);
     remove(oldUserComponent);
-  }
+  };
 
   #renderMovies = (movies) => {
     movies.forEach((movie) => this.#renderMovie(movie));
-  }
+  };
 
   #renderMovie = (movie) => {
     const comments = this.#getMovieComments(movie);
@@ -196,16 +196,14 @@ export default class BoardPresenter {
   };
 
   #clearBoard = ({resetRenderedMovieCount = false, resetSortType = false} = {}) => {
-    const movieCount = this.movies.length;
-
     remove(this.#movieSortComponent);
     remove(this.#movieEmptyComponent);
     remove(this.#showMoreButtonComponent);
     remove(this.#movieListBodyComponent);
     remove(this.#movieListComponent);
     remove(this.#movieListExtraRatingComponent);
-    remove(this.#movieListExtraCommentsComponent)
-    
+    remove(this.#movieListExtraCommentsComponent);
+
     this.#clearMoviePresenter(this.#moviePresenter);
     this.#clearMoviePresenter(this.#movieTopRatedPresenter);
     this.#clearMoviePresenter(this.#movieMostCommentedPresenter);
@@ -217,7 +215,7 @@ export default class BoardPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
-  }
+  };
 
   #clearMoviePresenter = (presenter) => {
     if (!presenter.length) {
@@ -226,7 +224,7 @@ export default class BoardPresenter {
 
     presenter.forEach((movie) => movie.destroy());
     presenter.clear();
-  }
+  };
 
   #renderEmptyList = () => {
     const filterType = this.#filterModel.currentFilter;
@@ -243,7 +241,7 @@ export default class BoardPresenter {
     this.#clearBoard({resetRenderedMovieCount: true});
     this.#renderBoard();
   };
-  
+
   #renderSort = () => {
     this.#movieSortComponent = new SortView(this.#currentSortType);
     this.#movieSortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
@@ -254,7 +252,6 @@ export default class BoardPresenter {
     if (this.#popupPresenter.isPopupActive && this.#popupPresenter.currentMovieId === data.id) {
       const comments = this.#getMovieComments(data);
       this.#popupPresenter.init(data, comments);
-      console.log(restoreState, restorePosition)
       if (restoreState) {
         this.#popupPresenter.restorePopupState();
       }
@@ -262,8 +259,8 @@ export default class BoardPresenter {
         this.#popupPresenter.restorePopupPosition();
       }
     }
-  }
-  
+  };
+
   #updateMovieCard = (updatedMovie) => {
     const comments = this.#getMovieComments(updatedMovie);
 
@@ -292,7 +289,7 @@ export default class BoardPresenter {
       case UserAction.DELETE_COMMENT:
         this.#commentModel.deleteComment(update.commentId);
         this.#movieModel.updateMovie(updateType, update.updatedMovie);
-        this.#updatePopup(update.updatedMovie, {restoreState: false, restorePosition: true});
+        this.#updatePopup(update.updatedMovie, {restoreState: true, restorePosition: true});
         break;
     }
   };
