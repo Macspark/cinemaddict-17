@@ -1,11 +1,11 @@
-import {render} from './framework/render.js';
+import { render } from './framework/render.js';
 import UserView from './view/user.js';
 import MovieFilterView from './view/filter.js';
 import StatisticsView from './view/statistics.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import MoviesModel from './model/movies-model.js';
 import CommentModel from './model/comments-model.js';
-import {generateFilter} from './mock/filter.js';
+import { generateFilter } from './mock/filter.js';
 
 const EntryPoints = {
   HEADER: document.querySelector('.header'),

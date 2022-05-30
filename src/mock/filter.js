@@ -1,4 +1,4 @@
-import {filter} from '../utils/filter.js';
+import { filter } from '../utils/filter.js';
 
 export const generateFilter = (movies) => Object.entries(filter).map(
   ([filterName, filterMovies]) => ({

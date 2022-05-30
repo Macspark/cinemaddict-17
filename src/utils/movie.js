@@ -1,19 +1,5 @@
 import dayjs from 'dayjs';
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const sortMoviesByComments = (movieA, movieB) => movieB.comments.length - movieA.comments.length;
 
 const sortMoviesByRating = (movieA, movieB) => movieB.rating - movieA.rating;
@@ -40,4 +26,14 @@ const sortMoviesByDate = (movieA, movieB) => {
   return weight ?? dayjs(movieB.releaseDate).diff(dayjs(movieA.releaseDate));
 };
 
-export {updateItem, sortMoviesByRating, sortMoviesByComments, sortMoviesByDate};
+const formatMovieRunningTime = (minutes) => {
+  minutes = Number(minutes);
+  const hours = Math.floor(minutes / 60);
+  minutes = Math.floor(minutes % 3600 % 60);
+
+  const hoursDisplay = hours > 0 ? `${hours}h ` : '';
+  const minutesDisplay = minutes > 0 ? `${minutes}m` : '';
+  return hoursDisplay + minutesDisplay;
+};
+
+export {sortMoviesByRating, sortMoviesByComments, sortMoviesByDate, formatMovieRunningTime};

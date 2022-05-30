@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {FilterType, FilterEmptyText} from '../const.js';
+import { FilterType, FilterEmptyText } from '../const.js';
 
 const createMovieListExtraTemplate = (filter = FilterType.ALL) => (
   `<section class="films-list">

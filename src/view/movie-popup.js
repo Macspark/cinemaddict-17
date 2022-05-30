@@ -1,18 +1,26 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {getHumanDate, getHumanDateTime, minutesToHours} from '../utils/common.js';
-import {nanoid} from 'nanoid';
+import MoviePopupCommentsView from './movie-popup-comments.js';
+import { getHumanDate, getHumanDateTime } from '../utils/common.js';
+import { formatMovieRunningTime } from '../utils/movie.js';
+import { nanoid } from 'nanoid';
 
 const createGenresLayout = (genres) => {
   if (!genres || !genres.length) {
     return '';
   }
-
+  
   const genresLayout = genres.reduce((result, genre) => (
     `${result}
       <span class="film-details__genre">${genre}</span>`
   ), '');
 
-  return genresLayout;
+  const genresTitle = genres.length === 1
+    ? 'Genre'
+    : 'Genres'
+
+  return `
+  <td class="film-details__term">${genresTitle}</td>
+  <td class="film-details__cell">${genresLayout}</td>`;
 };
 
 const createCommentsLayout = (comments) => {
@@ -24,7 +32,7 @@ const createCommentsLayout = (comments) => {
     `${result}
     <li class="film-details__comment">
         <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-${comment.emotion}">
+          <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
         </span>
         <div>
           <p class="film-details__comment-text">${comment.text}</p>
@@ -149,16 +157,14 @@ const createMoviePopupTemplate = (movie, comments, newComment) => {
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Runtime</td>
-                      <td class="film-details__cell">${minutesToHours(runningTime)}</td>
+                      <td class="film-details__cell">${formatMovieRunningTime(runningTime)}</td>
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Country</td>
                       <td class="film-details__cell">${country}</td>
                     </tr>
                     <tr class="film-details__row">
-                      <td class="film-details__term">Genres</td>
-                      <td class="film-details__cell">
-                      ${createGenresLayout(genres)}
+                        ${createGenresLayout(genres)}
                     </tr>
                 </table>
 
@@ -213,7 +219,15 @@ export default class MoviePopupView extends AbstractStatefulView {
     return this._state;
   }
 
-  convertStateToComment = () => {
+  restoreState = (state) => {
+    this.updateElement(state);
+  };
+
+  restorePosition = () => {
+    this.element.scrollTop = this.scrollTop;
+  };
+
+  #convertStateToComment = () => {
     const comment = {...this._state};
 
     comment.id = nanoid();
@@ -222,13 +236,32 @@ export default class MoviePopupView extends AbstractStatefulView {
     return comment;
   };
 
-  restoreState = (state) => {
-    this.updateElement(state);
+  setCommentSubmitHandler = (callback) => {
+    this._callback.submitComment = callback;
+    this.element.addEventListener('keydown', this.#onCtrlEnterKeyDown);
   };
 
-  restorePosition = () => {
-    this.element.scrollTop = this.scrollTop;
+  setCommentSubmitRemove = (callback) => {
+    this._callback.removeComment = callback;
+    this.element.addEventListener('click', this.#handleRemoveComment);
   };
+
+  #handleRemoveComment = (evt) => {
+    evt.preventDefault();
+    this._callback.removeComment(targetComment);
+  }
+
+  #onCtrlEnterKeyDown = (evt) => {
+    if (evt.ctrlKey && evt.keyCode == 13) {
+      evt.preventDefault();
+      this.#commentSubmitHandler();
+    }
+  }
+  
+  #commentSubmitHandler = () => {
+    const newComment = this.#convertStateToComment(this._state);
+    this._callback.submitComment(newComment);
+  }
 
   setCloseClickHandler = (callback) => {
     this._callback.closeClick = callback;
@@ -295,6 +328,7 @@ export default class MoviePopupView extends AbstractStatefulView {
     this.setFavoriteClickHandler(this._callback.favoriteClick);
     this.setWatchedClickHandler(this._callback.watchedClick);
     this.setWatchlistClickHandler(this._callback.watchlistClick);
+    this.setCommentSubmitHandler(this._callback.submitComment);
     this.#setInnerHandlers();
     this.restorePosition();
   };
