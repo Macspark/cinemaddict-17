@@ -1,5 +1,5 @@
-import { render, remove, RenderPosition } from '../framework/render.js';
-import { TOP_MOVIES, MOVIE_COUNT_PER_STEP, SortType, UpdateType, UserAction } from '../const.js';
+import { render, replace, remove, RenderPosition } from '../framework/render.js';
+import { TOP_MOVIES, MOVIE_COUNT_PER_STEP, SortType, FilterType, UpdateType, UserAction } from '../const.js';
 import { sortMoviesByRating, sortMoviesByComments, sortMoviesByDate } from '../utils/movie.js';
 import MovieContainerView from '../view/movie-container.js';
 import MovieListView from '../view/movie-list.js';
@@ -9,32 +9,41 @@ import ShowMoreButtonView from '../view/show-more-button.js';
 import SortView from '../view/sort.js';
 import MoviePresenter from './movie-presenter.js';
 import PopupPresenter from './popup-presenter.js';
+import { filterMovies } from '../utils/filter.js';
+import UserView from '../view/user.js';
 
 export default class BoardPresenter {
   #EntryPoints;
+
   #movieModel;
   #commentModel;
+  #filterModel;
+
   #currentSortType = SortType.DEFAULT;
   #renderedMovieCount = MOVIE_COUNT_PER_STEP;
   #moviePresenter = new Map();
   #movieTopRatedPresenter = new Map();
   #movieMostCommentedPresenter = new Map();
 
+  #userComponent = null;
   #movieListBodyComponent = new MovieContainerView();
   #movieListComponent = new MovieListView();
   #movieListExtraRatingComponent = new MovieListExtraView('Top rated');
   #movieListExtraCommentsComponent = new MovieListExtraView('Most comments');
-  #movieEmptyComponent = new MovieEmptyView();
+  #movieEmptyComponent = null;
   #showMoreButtonComponent = new ShowMoreButtonView();
   #movieSortComponent = null;
-  #popupPresenter;
 
-  constructor(EntryPoints, movieModel, commentModel) {
+  #popupPresenter = null;
+
+  constructor(EntryPoints, movieModel, commentModel, filterModel) {
     this.#EntryPoints = EntryPoints;
     this.#movieModel = movieModel;
     this.#commentModel = commentModel;
+    this.#filterModel = filterModel;
     this.#popupPresenter = new PopupPresenter(EntryPoints.FOOTER, this.#handleViewAction);
     this.#movieModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   init = () => {
@@ -42,14 +51,17 @@ export default class BoardPresenter {
   };
 
   get movies() {    
+    const filterType = this.#filterModel.currentFilter;
+    const filteredMovies = filterMovies(filterType, this.#movieModel.movies);
+
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return [...this.#movieModel.movies].sort(sortMoviesByDate);
+        return [...filteredMovies].sort(sortMoviesByDate);
       case SortType.RATING:
-        return [...this.#movieModel.movies].sort(sortMoviesByRating);
+        return [...filteredMovies].sort(sortMoviesByRating);
     }
 
-    return this.#movieModel.movies;
+    return filteredMovies;
   }
 
   get comments() {
@@ -66,6 +78,21 @@ export default class BoardPresenter {
       : [];
     return comments;
   };
+
+  #renderUser = () => {
+    const oldUserComponent = this.#userComponent;
+    const watchedMoviesCount = filterMovies(FilterType.HISTORY, this.#movieModel.movies).length;
+    
+    this.#userComponent = new UserView(watchedMoviesCount);
+
+    if (oldUserComponent === null) {
+      render(this.#userComponent, this.#EntryPoints.HEADER);
+      return;
+    }
+
+    replace(this.#userComponent, oldUserComponent);
+    remove(oldUserComponent);
+  }
 
   #renderMovies = (movies) => {
     movies.forEach((movie) => this.#renderMovie(movie));
@@ -146,6 +173,8 @@ export default class BoardPresenter {
     const movies = this.movies;
     const movieCount = movies.length;
 
+    this.#renderUser();
+
     if (movieCount === 0) {
       render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
       this.#renderEmptyList();
@@ -200,6 +229,8 @@ export default class BoardPresenter {
   }
 
   #renderEmptyList = () => {
+    const filterType = this.#filterModel.currentFilter;
+    this.#movieEmptyComponent =  new MovieEmptyView(filterType);
     render(this.#movieEmptyComponent, this.#movieListBodyComponent.element);
   };
 

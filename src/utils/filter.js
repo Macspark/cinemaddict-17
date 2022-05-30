@@ -1,4 +1,4 @@
-import { FilterType } from '../const.js';
+import { FilterType, FilterName } from '../const.js';
 
 const filter = {
   [FilterType.ALL]: (movies) => movies,
@@ -7,4 +7,16 @@ const filter = {
   [FilterType.FAVORITES]: (movies) => movies.filter((movie) => movie.isFavorite)
 };
 
-export {filter};
+const filterMovies = (filterType, movies) => {
+  return filter[filterType](movies);
+}
+
+const getFilters = (movies) => Object.entries(filter).map(
+  ([name, filterMovies]) => ({
+    name: name,
+    displayableName: FilterName[name],
+    count: filterMovies(movies).length,
+  }),
+);
+
+export {filterMovies, getFilters};

@@ -16,6 +16,7 @@ export default class MovieListExtraView extends AbstractView {
   }
 
   get template() {
+    console.log(this.#filter);
     return createMovieListExtraTemplate(this.#filter);
   }
 }

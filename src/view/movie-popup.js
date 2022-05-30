@@ -1,5 +1,4 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import MoviePopupCommentsView from './movie-popup-comments.js';
 import { getHumanDate, getHumanDateTime } from '../utils/common.js';
 import { formatMovieRunningTime } from '../utils/movie.js';
 import { nanoid } from 'nanoid';
@@ -241,14 +240,16 @@ export default class MoviePopupView extends AbstractStatefulView {
     this.element.addEventListener('keydown', this.#onCtrlEnterKeyDown);
   };
 
-  setCommentSubmitRemove = (callback) => {
+  setCommentRemoveHandler = (callback) => {
     this._callback.removeComment = callback;
-    this.element.addEventListener('click', this.#handleRemoveComment);
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => {
+      button.addEventListener('click', this.#handleRemoveComment);
+    });
   };
 
   #handleRemoveComment = (evt) => {
     evt.preventDefault();
-    this._callback.removeComment(targetComment);
+    this._callback.removeComment();
   }
 
   #onCtrlEnterKeyDown = (evt) => {

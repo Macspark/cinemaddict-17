@@ -98,25 +98,6 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   }
 
   #handleCommentRemove = (data) => {
-    if (!data.id || !data.text || !data.emoji) {
-      throw new Error('Comment is missing required fields')
-    }
-
-    const updatedMovie = {
-      ...this._movie,
-      comments: [data.id, ...this._movie.comments]
-    };
-
-    this._changeData(
-      UserAction.ADD_COMMENT,
-      UpdateType.NONE,
-      data
-    );
-
-    this._changeData(
-      UserAction.UPDATE_MOVIE,
-      UpdateType.MINOR,
-      updatedMovie
-    );
+    
   }
 }
