@@ -1,7 +1,8 @@
 import { getRandomInteger, getRandomArrayElement } from '../utils/common.js';
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
-let currentId = 0;
+const commentIds = [];
 
 const TEXTS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -24,21 +25,23 @@ const EMOTIONS = [
   'angry'
 ];
 
-const generateCommentId = () => {
-  currentId++;
-  return currentId - 1;
-};
-
 const generateDate = () => {
   const weeksGap = getRandomInteger(-1000, -100);
 
   return dayjs().add(weeksGap, 'week').toDate();
 };
 
-export const generateComment = () => ({
-  id: generateCommentId(),
-  text: getRandomArrayElement(TEXTS),
-  emoji: getRandomArrayElement(EMOTIONS),
-  author: getRandomArrayElement(AUTHORS),
-  date: generateDate()
-});
+export const generateComment = () => {
+  const commentId = nanoid();
+  commentIds.push(commentId);
+
+  return {
+    id: commentId,
+    text: getRandomArrayElement(TEXTS),
+    emoji: getRandomArrayElement(EMOTIONS),
+    author: getRandomArrayElement(AUTHORS),
+    date: generateDate()
+  };
+};
+
+export {commentIds};

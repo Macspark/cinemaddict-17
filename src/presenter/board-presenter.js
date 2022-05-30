@@ -250,49 +250,53 @@ export default class BoardPresenter {
     render(this.#movieSortComponent, this.#EntryPoints.MAIN);
   };
 
-  #updatePopup = (data, restorePopup) => {
+  #updatePopup = (data, isResettingData = false) => {
     if (this.#popupPresenter.isPopupActive && this.#popupPresenter.currentMovieId === data.id) {
       const comments = this.#getMovieComments(data);
       this.#popupPresenter.init(data, comments);
-      if (restorePopup) {
+      if (!isResettingData) {
         this.#popupPresenter.restorePopup();
       }
     }
   }
   
   #updateMovieCard = (updatedMovie) => {
+    const comments = this.#getMovieComments(updatedMovie);
+
     if (this.#moviePresenter.has(updatedMovie.id)) {
-      this.#moviePresenter.get(updatedMovie.id).init(updatedMovie);
+      this.#moviePresenter.get(updatedMovie.id).init(updatedMovie, comments);
     }
     if (this.#movieTopRatedPresenter.has(updatedMovie.id)) {
-      this.#movieTopRatedPresenter.get(updatedMovie.id).init(updatedMovie);
+      this.#movieTopRatedPresenter.get(updatedMovie.id).init(updatedMovie, comments);
     }
     if (this.#movieMostCommentedPresenter.has(updatedMovie.id)) {
-      this.#movieMostCommentedPresenter.get(updatedMovie.id).init(updatedMovie);
+      this.#movieMostCommentedPresenter.get(updatedMovie.id).init(updatedMovie, comments);
     }
   };
 
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#movieModel.updateMovie(updateType, update);
+        this.#movieModel.updateMovie(updateType, update.updatedMovie);
+        this.#updatePopup(update.updatedMovie);
         break;
       case UserAction.ADD_COMMENT:
-        console.log(update);
-        this.#commentModel.addComment(updateType, update);
+        this.#commentModel.addComment(update.comment);
+        this.#movieModel.updateMovie(updateType, update.updatedMovie);
+        this.#updatePopup(update.updatedMovie, true);
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentModel.deleteComment(updateType, update);
+        this.#commentModel.deleteComment(update.commentId);
+        this.#movieModel.updateMovie(updateType, update.updatedMovie);
+        this.#updatePopup(update.updatedMovie, true);
         break;
     }
   };
 
   #handleModelEvent = (updateType, data) => {
-    this.#updatePopup(data);
-
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#updateMovieCard(data)
+        this.#updateMovieCard(data);
         break;
       case UpdateType.MINOR:
         this.#clearBoard();

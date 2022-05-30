@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+const relativeTime = require('dayjs/plugin/relativeTime');
+dayjs.extend(relativeTime);
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -27,4 +29,18 @@ const getHumanDate = (date) => date ? dayjs(date).format('DD MMMM YYYY') : '';
 
 const getHumanDateTime = (date) => date ? dayjs(date).format('YYYY/MM/DD hh:mm') : '';
 
-export {getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements, getYear, getHumanDate, getHumanDateTime};
+const getHumanRelativeTime = (date) => date ? dayjs(date).fromNow() : '';
+
+const findIndexByValue = (arr, value) => {
+  const index = arr.findIndex((element) => element === value);
+  return index;
+}
+
+const removeIndexFromArray = (arr, index) => {
+  return [
+    ...arr.slice(0, index),
+    ...arr.slice(index + 1),
+  ];
+}
+
+export {removeIndexFromArray, findIndexByValue, getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements, getYear, getHumanDate, getHumanDateTime, getHumanRelativeTime};

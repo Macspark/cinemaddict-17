@@ -12,8 +12,8 @@ const EntryPoints = {
   FOOTER: document.querySelector('.footer')
 };
 
-const movieModel = new MovieModel();
 const commentModel = new CommentModel();
+const movieModel = new MovieModel();
 const filterModel = new FilterModel();
 
 const statisticsView = new StatisticsView(movieModel.movies.length);

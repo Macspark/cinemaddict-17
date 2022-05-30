@@ -1,7 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getHumanDate, getHumanDateTime } from '../utils/common.js';
+import { getHumanDate, getHumanRelativeTime } from '../utils/common.js';
 import { formatMovieRunningTime } from '../utils/movie.js';
-import { nanoid } from 'nanoid';
 
 const createGenresLayout = (genres) => {
   if (!genres || !genres.length) {
@@ -37,8 +36,8 @@ const createCommentsLayout = (comments) => {
           <p class="film-details__comment-text">${comment.text}</p>
           <p class="film-details__comment-info">
               <span class="film-details__comment-author">${comment.author}</span>
-              <span class="film-details__comment-day">${getHumanDateTime(comment.date)}</span>
-              <button class="film-details__comment-delete">Delete</button>
+              <span class="film-details__comment-day">${getHumanRelativeTime(comment.date)}</span>
+              <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
           </p>
         </div>
       </li>`
@@ -226,15 +225,6 @@ export default class MoviePopupView extends AbstractStatefulView {
     this.element.scrollTop = this.scrollTop;
   };
 
-  #convertStateToComment = () => {
-    const comment = {...this._state};
-
-    comment.id = nanoid();
-    delete comment.scrollTop;
-
-    return comment;
-  };
-
   setCommentSubmitHandler = (callback) => {
     this._callback.submitComment = callback;
     this.element.addEventListener('keydown', this.#onCtrlEnterKeyDown);
@@ -249,7 +239,7 @@ export default class MoviePopupView extends AbstractStatefulView {
 
   #handleRemoveComment = (evt) => {
     evt.preventDefault();
-    this._callback.removeComment();
+    this._callback.removeComment(evt.target.dataset.id);
   }
 
   #onCtrlEnterKeyDown = (evt) => {
@@ -260,7 +250,7 @@ export default class MoviePopupView extends AbstractStatefulView {
   }
   
   #commentSubmitHandler = () => {
-    const newComment = this.#convertStateToComment(this._state);
+    const newComment = this._state;
     this._callback.submitComment(newComment);
   }
 

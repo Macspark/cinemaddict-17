@@ -1,7 +1,7 @@
 import { getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements } from '../utils/common.js';
 import dayjs from 'dayjs';
-
-let currentId = 0;
+import { nanoid } from 'nanoid';
+import { commentIds } from './comment.js';
 
 const DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -59,13 +59,20 @@ const generateDate = () => {
 
 const generateRunningTime = () => getRandomInteger(60, 240);
 
-const generateMovieId = () => {
-  currentId++;
-  return currentId - 1;
-};
+const assignCommentIds = () => {
+  if (!commentIds.length) {
+    return [];
+  }
+
+  const amount = getRandomInteger(0, 4);
+
+  const result = commentIds.splice(0, amount);
+
+  return result;
+}
 
 export const generateMovie = () => ({
-  id: generateMovieId(),
+  id: nanoid(),
   poster: `https://picsum.photos/id/${getRandomInteger(1, 1000)}/232/342`,
   title: getRandomArrayElement(TITLES),
   originalTitle: getRandomArrayElement(TITLES),
@@ -79,7 +86,7 @@ export const generateMovie = () => ({
   genres: getRandomArrayElements(GENRES, getRandomInteger(1, 4)),
   fullDescription: getRandomArrayElement(DESCRIPTIONS),
   ageRestriction: getRandomArrayElement(AGES),
-  comments: Array.from({length: getRandomInteger(0, 4)}, () => getRandomInteger(1, 20)),
+  comments: assignCommentIds(),
   isWatchlist: Boolean(getRandomInteger(0, 1)),
   isWatched: Boolean(getRandomInteger(0, 1)),
   isFavorite: Boolean(getRandomInteger(0, 1))

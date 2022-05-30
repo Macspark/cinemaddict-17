@@ -1,7 +1,10 @@
 import { render, remove, RenderPosition } from '../framework/render.js';
 import MoviePopupView from '../view/movie-popup.js';
 import AbstractMoviePresenter from '../framework/presenter/abstract-movie-presenter.js';
+import { findIndexByValue, removeIndexFromArray } from '../utils/common.js';
 import { UserAction, UpdateType } from '../const.js';
+import { nanoid } from 'nanoid';
+import dayjs from 'dayjs';
 
 export default class PopupPresenter extends AbstractMoviePresenter {
   #popupComponent = null;
@@ -22,7 +25,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     if (this.#isPopupActive) {
       this.#closePopup();
     }
-
+    
     this._movie = movie;
     this._comments = comments;
 
@@ -74,30 +77,47 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this.#closePopup();
   };
 
+  #convertStateToComment = (data) => {
+    const comment = data;
+
+    comment.id = nanoid();
+    comment.date = dayjs().format();
+    
+    return comment;
+  }
+
   #handleCommentSubmit = (data) => {
-    if (!data.id || !data.text || !data.emoji) {
-      throw new Error('Comment is missing required fields')
+    if (!data.text || !data.emoji) {
+      throw new Error('Comment is missing required fields');
     }
+    
+    const comment = this.#convertStateToComment(data);
 
     const updatedMovie = {
       ...this._movie,
-      comments: [data.id, ...this._movie.comments]
+      comments: [comment.id, ...this._movie.comments]
     };
 
     this._changeData(
       UserAction.ADD_COMMENT,
-      UpdateType.NONE,
-      data
-    );
-
-    this._changeData(
-      UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
-      updatedMovie
+      {comment, updatedMovie}
     );
   }
 
-  #handleCommentRemove = (data) => {
-    
+  #handleCommentRemove = (commentId) => {
+    const movieCommentIndex = findIndexByValue(this._movie.comments, commentId);
+    const updatedComments = removeIndexFromArray(this._movie.comments, movieCommentIndex);
+
+    const updatedMovie = {
+      ...this._movie,
+      comments: updatedComments
+    };
+
+    this._changeData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      {commentId, updatedMovie}
+    );
   }
 }
