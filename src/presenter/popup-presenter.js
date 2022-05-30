@@ -1,5 +1,5 @@
 import { render, remove, RenderPosition } from '../framework/render.js';
-import MoviePopupView from '../view/movie-popup.js';
+import PopupView from '../view/popup.js';
 import AbstractMoviePresenter from '../framework/presenter/abstract-movie-presenter.js';
 import { findIndexByValue, removeIndexFromArray } from '../utils/common.js';
 import { UserAction, UpdateType } from '../const.js';
@@ -29,7 +29,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this._movie = movie;
     this._comments = comments;
 
-    this.#popupComponent = new MoviePopupView(movie, comments);
+    this.#popupComponent = new PopupView(movie, comments);
     this.#popupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this.#popupComponent.setWatchedClickHandler(this._handleWatchedClick);
     this.#popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -44,11 +44,13 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this.#currentMovieId = this._movie.id;
   };
 
-  restorePopup = () => {
-    this.#popupComponent.scrollTop = this.#oldPopupComponent.scrollTop;
+  restorePopupState = () => {
     this.#popupComponent.restoreState(this.#oldPopupComponent.state);
-    this.#popupComponent.restorePosition();
   };
+
+  restorePopupPosition = () => {
+    this.#popupComponent.restorePosition(this.#oldPopupComponent.scrollTop);
+  }
 
   #closePopup = () => {
     remove(this.#popupComponent);
@@ -88,14 +90,14 @@ export default class PopupPresenter extends AbstractMoviePresenter {
 
   #handleCommentSubmit = (data) => {
     if (!data.text || !data.emoji) {
-      throw new Error('Comment is missing required fields');
+      return;
     }
     
     const comment = this.#convertStateToComment(data);
 
     const updatedMovie = {
       ...this._movie,
-      comments: [comment.id, ...this._movie.comments]
+      comments: [...this._movie.comments, comment.id]
     };
 
     this._changeData(

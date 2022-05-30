@@ -250,12 +250,16 @@ export default class BoardPresenter {
     render(this.#movieSortComponent, this.#EntryPoints.MAIN);
   };
 
-  #updatePopup = (data, isResettingData = false) => {
+  #updatePopup = (data, {restoreState = false, restorePosition = false} = {}) => {
     if (this.#popupPresenter.isPopupActive && this.#popupPresenter.currentMovieId === data.id) {
       const comments = this.#getMovieComments(data);
       this.#popupPresenter.init(data, comments);
-      if (!isResettingData) {
-        this.#popupPresenter.restorePopup();
+      console.log(restoreState, restorePosition)
+      if (restoreState) {
+        this.#popupPresenter.restorePopupState();
+      }
+      if (restorePosition) {
+        this.#popupPresenter.restorePopupPosition();
       }
     }
   }
@@ -278,17 +282,17 @@ export default class BoardPresenter {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
         this.#movieModel.updateMovie(updateType, update.updatedMovie);
-        this.#updatePopup(update.updatedMovie);
+        this.#updatePopup(update.updatedMovie, {restoreState: true, restorePosition: true});
         break;
       case UserAction.ADD_COMMENT:
         this.#commentModel.addComment(update.comment);
         this.#movieModel.updateMovie(updateType, update.updatedMovie);
-        this.#updatePopup(update.updatedMovie, true);
+        this.#updatePopup(update.updatedMovie, {restoreState: false, restorePosition: true});
         break;
       case UserAction.DELETE_COMMENT:
         this.#commentModel.deleteComment(update.commentId);
         this.#movieModel.updateMovie(updateType, update.updatedMovie);
-        this.#updatePopup(update.updatedMovie, true);
+        this.#updatePopup(update.updatedMovie, {restoreState: false, restorePosition: true});
         break;
     }
   };

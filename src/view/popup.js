@@ -197,7 +197,7 @@ const createMoviePopupTemplate = (movie, comments, newComment) => {
   );
 };
 
-export default class MoviePopupView extends AbstractStatefulView {
+export default class PopupView extends AbstractStatefulView {
   #movie;
   #comments;
   scrollTop;
@@ -221,8 +221,8 @@ export default class MoviePopupView extends AbstractStatefulView {
     this.updateElement(state);
   };
 
-  restorePosition = () => {
-    this.element.scrollTop = this.scrollTop;
+  restorePosition = (scrollTop = this.scrollTop) => {
+    this.element.scrollTop = scrollTop;
   };
 
   setCommentSubmitHandler = (callback) => {
