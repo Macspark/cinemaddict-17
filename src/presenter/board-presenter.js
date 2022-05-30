@@ -267,11 +267,17 @@ export default class BoardPresenter {
     if (this.#moviePresenter.has(updatedMovie.id)) {
       this.#moviePresenter.get(updatedMovie.id).init(updatedMovie, comments);
     }
+
     if (this.#movieTopRatedPresenter.has(updatedMovie.id)) {
-      this.#movieTopRatedPresenter.get(updatedMovie.id).init(updatedMovie, comments);
+      remove(this.#movieListExtraRatingComponent);
+      this.#clearMoviePresenter(this.#movieTopRatedPresenter);
+      this.#renderTopRatedMovies();
     }
+
     if (this.#movieMostCommentedPresenter.has(updatedMovie.id)) {
-      this.#movieMostCommentedPresenter.get(updatedMovie.id).init(updatedMovie, comments);
+      remove(this.#movieListExtraCommentsComponent);
+      this.#clearMoviePresenter(this.#movieMostCommentedPresenter);
+      this.#renderMostCommentedMovies();
     }
   };
 
