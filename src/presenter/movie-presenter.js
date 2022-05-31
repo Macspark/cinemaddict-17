@@ -1,6 +1,6 @@
-import {render, remove, replace} from '../framework/render.js';
+import { render, remove, replace } from '../framework/render.js';
 import MovieCardView from '../view/movie-card.js';
-import AbstractMoviePresenter from './abstract-movie-presenter.js';
+import AbstractMoviePresenter from '../framework/presenter/abstract-movie-presenter.js';
 
 export default class MoviePresenter extends AbstractMoviePresenter {
   #movieComponent = null;

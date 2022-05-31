@@ -1,5 +1,5 @@
 const TOP_MOVIES = 2;
-const MOVIES_COUNT_PER_STEP = 5;
+const MOVIE_COUNT_PER_STEP = 5;
 
 const FilterType = {
   ALL: 'all',
@@ -28,5 +28,27 @@ const SortType = {
   RATING: 'rating',
 };
 
-export {TOP_MOVIES, MOVIES_COUNT_PER_STEP, FilterType, FilterName, FilterEmptyText, SortType};
+const UserAction = {
+  UPDATE_MOVIE: 'UPDATE_MOVIE',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+const UpdateType = {
+  NONE: 'NONE',
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export {
+  TOP_MOVIES,
+  MOVIE_COUNT_PER_STEP,
+  FilterType,
+  FilterName,
+  FilterEmptyText,
+  SortType,
+  UserAction,
+  UpdateType,
+};
 

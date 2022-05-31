@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -21,20 +19,23 @@ const getRandomArrayElements = (arr, amount = 1) => {
   return result;
 };
 
-const getYear = (date) => date ? dayjs(date).format('YYYY') : '';
-
-const getHumanDate = (date) => date ? dayjs(date).format('DD MMMM YYYY') : '';
-
-const getHumanDateTime = (date) => date ? dayjs(date).format('YYYY/MM/DD hh:mm') : '';
-
-const minutesToHours = (minutes) => {
-  minutes = Number(minutes);
-  const hours = Math.floor(minutes / 60);
-  minutes = Math.floor(minutes % 3600 % 60);
-
-  const hoursDisplay = hours > 0 ? `${hours}h ` : '';
-  const minutesDisplay = minutes > 0 ? `${minutes}m` : '';
-  return hoursDisplay + minutesDisplay;
+const findIndexByValue = (arr, value) => {
+  const index = arr.findIndex((element) => element === value);
+  return index;
 };
 
-export {getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements, getYear, getHumanDate, getHumanDateTime, minutesToHours};
+const removeIndexFromArray = (arr, index) => (
+  [
+    ...arr.slice(0, index),
+    ...arr.slice(index + 1),
+  ]
+);
+
+export {
+  removeIndexFromArray,
+  findIndexByValue,
+  getRandomInteger,
+  getRandomDecimal,
+  getRandomArrayElement,
+  getRandomArrayElements,
+};
