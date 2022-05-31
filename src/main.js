@@ -19,8 +19,8 @@ const filterModel = new FilterModel();
 const statisticsView = new StatisticsView(movieModel.movies.length);
 
 const filterPresenter = new FilterPresenter(EntryPoints.MAIN, movieModel, filterModel);
-const movieBoardPresenter = new BoardPresenter(EntryPoints, movieModel, commentModel, filterModel);
+const boardPresenter = new BoardPresenter(EntryPoints, movieModel, commentModel, filterModel);
 
 render(statisticsView, EntryPoints.FOOTER);
 filterPresenter.init();
-movieBoardPresenter.init();
+boardPresenter.init();

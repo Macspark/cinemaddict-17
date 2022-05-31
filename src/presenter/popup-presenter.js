@@ -37,8 +37,8 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this._movie = movie;
     this._comments = comments;
 
-    this.#renderPopup();
-    this.#renderComments();
+    this.#renderPopup(movie);
+    this.#renderComments(comments);
     this.#renderNewComment();
 
     document.body.classList.add('hide-overflow');
@@ -57,8 +57,8 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this.#popupComponent.element.scrollTop = this.#oldScrollTop;
   };
 
-  #renderPopup = () => {
-    this.#popupComponent = new PopupView(this._movie, this._comments.length);
+  #renderPopup = (movie) => {
+    this.#popupComponent = new PopupView(movie, this._comments.length);
     this.#popupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this.#popupComponent.setWatchedClickHandler(this._handleWatchedClick);
     this.#popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -66,13 +66,17 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     render(this.#popupComponent, this._container, RenderPosition.AFTEREND);
   };
 
-  #renderComments = () => {
-    this._comments.forEach((comment) => {
-      const popupCommentView = new PopupCommentView(comment);
-      popupCommentView.setCommentRemoveHandler(this.#handleCommentRemove);
-      render(popupCommentView, this.#popupComponent.commentsContainerElement, RenderPosition.BEFOREEND);
-      this.#popupCommentViewMap.add(popupCommentView);
+  #renderComments = (comments) => {
+    comments.forEach((comment) => {
+      this.#renderComment(comment);
     });
+  };
+
+  #renderComment = (comment) => {
+    const popupCommentView = new PopupCommentView(comment);
+    popupCommentView.setCommentRemoveHandler(this.#handleCommentRemove);
+    render(popupCommentView, this.#popupComponent.commentsContainerElement, RenderPosition.BEFOREEND);
+    this.#popupCommentViewMap.add(popupCommentView);
   };
 
   #renderNewComment = () => {
