@@ -47,12 +47,14 @@ export default class FilterView extends AbstractView {
   };
 
   #filterClickHandler = (evt) => {
-    if (evt.target.tagName !== 'A') {
+    const target = evt.target.closest('a');
+
+    if (!target) {
       return;
     }
 
     evt.preventDefault();
-    const newFilter = evt.target.dataset.filterType;
+    const newFilter = target.dataset.filterType;
     this._callback.filterClick(newFilter);
   };
 }
