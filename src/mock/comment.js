@@ -44,4 +44,4 @@ export const generateComment = () => {
   };
 };
 
-export {commentIds};
+export { commentIds };

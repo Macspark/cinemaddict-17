@@ -31,4 +31,11 @@ const removeIndexFromArray = (arr, index) => (
   ]
 );
 
-export {removeIndexFromArray, findIndexByValue, getRandomInteger, getRandomDecimal, getRandomArrayElement, getRandomArrayElements};
+export {
+  removeIndexFromArray,
+  findIndexByValue,
+  getRandomInteger,
+  getRandomDecimal,
+  getRandomArrayElement,
+  getRandomArrayElements,
+};

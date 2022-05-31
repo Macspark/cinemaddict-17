@@ -17,4 +17,7 @@ const getFilters = (movies) => Object.entries(filter).map(
   }),
 );
 
-export {getFilteredMovies, getFilters};
+export {
+  getFilteredMovies,
+  getFilters,
+};

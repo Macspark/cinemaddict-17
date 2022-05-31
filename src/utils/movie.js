@@ -26,4 +26,8 @@ const sortMoviesByDate = (movieA, movieB) => {
   return weight ?? dayjs(movieB.releaseDate).diff(dayjs(movieA.releaseDate));
 };
 
-export {sortMoviesByRating, sortMoviesByComments, sortMoviesByDate};
+export {
+  sortMoviesByRating,
+  sortMoviesByComments,
+  sortMoviesByDate,
+};

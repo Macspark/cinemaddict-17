@@ -41,5 +41,14 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-export {TOP_MOVIES, MOVIE_COUNT_PER_STEP, FilterType, FilterName, FilterEmptyText, SortType, UserAction, UpdateType};
+export {
+  TOP_MOVIES,
+  MOVIE_COUNT_PER_STEP,
+  FilterType,
+  FilterName,
+  FilterEmptyText,
+  SortType,
+  UserAction,
+  UpdateType,
+};
 

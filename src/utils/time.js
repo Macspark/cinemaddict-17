@@ -20,4 +20,10 @@ const formatMovieRunningTime = (minutes) => {
   return hoursDisplay + minutesDisplay;
 };
 
-export {getYear, getHumanDate, getHumanDateTime, getHumanRelativeTime, formatMovieRunningTime};
+export {
+  getYear,
+  getHumanDate,
+  getHumanDateTime,
+  getHumanRelativeTime,
+  formatMovieRunningTime,
+};
