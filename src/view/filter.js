@@ -2,7 +2,11 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { FilterType } from '../const.js';
 
 const createFilterItemTemplate  = (filter, isActive) => {
-  const {name, displayableName, count} = filter;
+  const {
+    name,
+    displayableName,
+    count
+  } = filter;
 
   const moviesCount = name === FilterType.ALL
     ? ''
