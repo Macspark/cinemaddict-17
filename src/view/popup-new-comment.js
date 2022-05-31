@@ -79,6 +79,10 @@ export default class PopupCommentsView extends AbstractStatefulView {
 
   #commentSubmitHandler = () => {
     const newComment = this._state;
+    if (!newComment.text || !newComment.emoji) {
+      this.shake();
+      return;
+    }
     this._callback.submitComment(newComment);
   };
 

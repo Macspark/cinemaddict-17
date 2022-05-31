@@ -11,7 +11,6 @@ import dayjs from 'dayjs';
 export default class PopupPresenter extends AbstractMoviePresenter {
   #popupComponent = null;
   #popupNewCommentComponent = null;
-  #popupCommentViewMap = new Set();
   #oldState = null;
   #oldScrollTop = 0;
   #currentMovieId = -1;
@@ -76,7 +75,6 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     const popupCommentView = new PopupCommentView(comment);
     popupCommentView.setCommentRemoveHandler(this.#handleCommentRemove);
     render(popupCommentView, this.#popupComponent.commentsContainerElement, RenderPosition.BEFOREEND);
-    this.#popupCommentViewMap.add(popupCommentView);
   };
 
   #renderNewComment = () => {
@@ -86,26 +84,11 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #closePopup = () => {
-    this.#clearPopupComponents();
+    remove(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDown);
     this.#isPopupActive = false;
     this.#currentMovieId = -1;
-  };
-
-  #clearPopupComponents = () => {
-    this.#clearCommentsViewMap();
-    remove(this.#popupComponent);
-    remove(this.#popupNewCommentComponent);
-  };
-
-  #clearCommentsViewMap = () => {
-    if (!this.#popupCommentViewMap.size) {
-      return;
-    }
-
-    this.#popupCommentViewMap.forEach((comment) => remove(comment));
-    this.#popupCommentViewMap.clear();
   };
 
   get isPopupActive() {
@@ -127,7 +110,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this.#closePopup();
   };
 
-  #convertStateToComment = (data) => {
+  #adaptCommentState = (data) => {
     const comment = data;
 
     comment.id = nanoid();
@@ -137,11 +120,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #handleCommentSubmit = (data) => {
-    if (!data.text || !data.emoji) {
-      return;
-    }
-
-    const comment = this.#convertStateToComment(data);
+    const comment = this.#adaptCommentState(data);
 
     const updatedMovie = {
       ...this._movie,

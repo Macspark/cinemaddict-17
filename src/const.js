@@ -41,6 +41,20 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
+const UserRankTitle = {
+  NONE: '',
+  NOVICE: 'Novice',
+  FAN: 'Fan',
+  MOVIE_BUFF: 'Movie Buff',
+};
+
+const UserRankRequirement = {
+  NONE: 0,
+  NOVICE: 1,
+  FAN: 11,
+  MOVIE_BUFF: 21,
+};
+
 export {
   TOP_MOVIES,
   MOVIE_COUNT_PER_STEP,
@@ -50,5 +64,7 @@ export {
   SortType,
   UserAction,
   UpdateType,
+  UserRankTitle,
+  UserRankRequirement,
 };
 
