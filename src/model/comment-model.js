@@ -1,9 +1,14 @@
-export default class CommentModel {
-  #commentsApiService;
-  #comments;
 
-  constructor(commentsApiService) {
+import Observable from '../framework/observable.js';
+
+export default class CommentModel extends Observable {
+  #commentsApiService;
+  #movieModel;
+
+  constructor(commentsApiService, movieModel) {
+    super();
     this.#commentsApiService = commentsApiService;
+    this.#movieModel = movieModel;
   }
 
   getMovieComments = async (movieId) => {
@@ -15,24 +20,23 @@ export default class CommentModel {
     }
   };
 
-  addComment = (update) => {
-    this.#comments = [
-      update,
-      ...this.#comments,
-    ];
+  addCommentToMovie = async (updateType, movieId, comment) => {
+    try {
+      const response = await this.#commentsApiService.addCommentToMovie(movieId, comment);
+      const update = this.#adaptToClient(response); 
+      const updatedComments = update.comments.map(this.#adaptToClient);
+      this._notify(updateType, updatedComments);
+    } catch(err) {
+      throw new Error('Can\'t add comment');
+    }
   };
 
-  deleteComment = (commentId) => {
-    const index = this.#comments.findIndex((comment) => comment.id === commentId);
+  deleteCommentFromMovie = async (updateType, commentId) => {
+   
+      const response = await this.#commentsApiService.removeCommentFromMovie(commentId);
+      console.log(response);
+      this._notify(updateType); 
 
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting comment');
-    }
-
-    this.#comments = [
-      ...this.#comments.slice(0, index),
-      ...this.#comments.slice(index + 1),
-    ];
   };
 
   #adaptToClient = (comment) => {
@@ -41,16 +45,6 @@ export default class CommentModel {
     };
 
     delete adaptedComment.comment;
-
-    return adaptedComment;
-  }
-
-  #adaptToServer = (comment) => {
-    const adaptedComment = {...comment,
-      comment: comment.text,
-    };
-
-    delete adaptedComment.text;
 
     return adaptedComment;
   }

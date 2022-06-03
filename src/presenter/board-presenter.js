@@ -11,6 +11,7 @@ import MoviePresenter from './movie-presenter.js';
 import PopupPresenter from './popup-presenter.js';
 import { getFilteredMovies } from '../utils/filter.js';
 import UserView from '../view/user.js';
+import LoadingView from '../view/loading.js';
 
 export default class BoardPresenter {
   #EntryPoints;
@@ -26,6 +27,8 @@ export default class BoardPresenter {
   #movieMostCommentedPresenter = new Map();
 
   #userComponent = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
   #movieListBodyComponent = new MovieContainerView();
   #movieListComponent = new MovieListView();
   #movieListExtraRatingComponent = new MovieListExtraView('Top rated');
@@ -43,6 +46,10 @@ export default class BoardPresenter {
     this.#filterModel = filterModel;
     this.#popupPresenter = new PopupPresenter(EntryPoints.FOOTER, this.#commentModel, this.#handleViewAction);
     this.#movieModel.addObserver(this.#handleModelEvent);
+    this.#movieModel.addObserver(this.#popupPresenter.handleMovieModelEvent);
+    this.#commentModel.addObserver(this.#movieModel.refreshMovieModel);
+    this.#commentModel.addObserver(this.#handleModelEvent);
+    this.#commentModel.addObserver(this.#popupPresenter.handleCommentModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
@@ -152,19 +159,23 @@ export default class BoardPresenter {
   };
 
   #renderBoard = () => {
-    const movies = this.movies;
-    const movieCount = movies.length;
-
     this.#renderUser();
 
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    const movies = this.movies;
+    const movieCount = movies.length;
+    render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
+
     if (movieCount === 0) {
-      render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
       this.#renderEmptyList();
       return;
     }
 
     this.#renderSort();
-    render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
     render(this.#movieListComponent, this.#movieListBodyComponent.element);
 
     this.#renderMovies(movies.slice(0, Math.min(movieCount, this.#renderedMovieCount)));
@@ -227,23 +238,14 @@ export default class BoardPresenter {
   #renderSort = () => {
     this.#movieSortComponent = new SortView(this.#currentSortType);
     this.#movieSortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    render(this.#movieSortComponent, this.#EntryPoints.MAIN);
+    render(this.#movieSortComponent, this.#movieListBodyComponent.element, RenderPosition.BEFOREBEGIN);
   };
 
-  #updatePopup = (data, {restoreState = false, restorePosition = false} = {}) => {
-    if (this.#popupPresenter.isPopupActive && this.#popupPresenter.currentMovieId === data.id) {
-      this.#popupPresenter.init(data);
-      if (restoreState) {
-        this.#popupPresenter.restorePopupState();
-      }
-      if (restorePosition) {
-        this.#popupPresenter.restorePopupPosition();
-      }
-    }
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#EntryPoints.MAIN);
   };
 
   #updateMovieCard = (updatedMovie) => {
-
     if (this.#moviePresenter.has(updatedMovie.id)) {
       this.#moviePresenter.get(updatedMovie.id).init(updatedMovie);
     }
@@ -265,17 +267,12 @@ export default class BoardPresenter {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
         this.#movieModel.updateMovie(updateType, update.updatedMovie);
-        this.#updatePopup(update.updatedMovie, {restoreState: true, restorePosition: true});
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentModel.addComment(update.comment);
-        this.#movieModel.updateMovie(updateType, update.updatedMovie);
-        this.#updatePopup(update.updatedMovie, {restoreState: false, restorePosition: true});
+        this.#commentModel.addCommentToMovie(updateType, update.movieId, update.data);
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentModel.deleteComment(update.commentId);
-        this.#movieModel.updateMovie(updateType, update.updatedMovie);
-        this.#updatePopup(update.updatedMovie, {restoreState: true, restorePosition: true});
+        this.#commentModel.deleteCommentFromMovie(updateType, update.commentId);
         break;
     }
   };
@@ -294,7 +291,8 @@ export default class BoardPresenter {
         this.#renderBoard();
         break;
       case UpdateType.INIT:
-        this.#clearBoard({resetRenderedMovieCount: true, resetSortType: true});
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderBoard();
         break;
     }

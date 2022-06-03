@@ -2,7 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const createNewCommentPopupTemplate = (newComment) => {
   const {
-    comment = null,
+    text = null,
     emotion = null
   } = newComment;
 
@@ -17,7 +17,7 @@ const createNewCommentPopupTemplate = (newComment) => {
       </div>
 
       <label class="film-details__comment-label">
-        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${comment ? comment : ''}</textarea>
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${text ? text : ''}</textarea>
       </label>
 
       <div class="film-details__emoji-list">
@@ -47,10 +47,10 @@ const createNewCommentPopupTemplate = (newComment) => {
 };
 
 export default class PopupCommentsView extends AbstractStatefulView {
-  constructor(state) {
+  constructor(state = {}) {
     super();
     this.#setInnerHandlers();
-    this._setState(state);
+    this.updateElement(state);
   }
 
   get template() {
@@ -60,10 +60,6 @@ export default class PopupCommentsView extends AbstractStatefulView {
   get state() {
     return this._state;
   }
-
-  restoreState = (state) => {
-    this.updateElement(state);
-  };
 
   setCommentSubmitHandler = (callback) => {
     this._callback.submitComment = callback;

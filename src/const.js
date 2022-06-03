@@ -3,6 +3,12 @@ const MOVIE_COUNT_PER_STEP = 5;
 const AUTHORIZATION = 'Basic fw23fhja221j';
 const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict';
 
+const MovieLabel = {
+  GENRE: 'Genre',
+  ACTOR: 'Actor',
+  WRITER: 'Writer',
+}
+
 const FilterType = {
   ALL: 'all',
   WATCHLIST: 'watchlist',
@@ -70,6 +76,7 @@ export {
   END_POINT,
   TOP_MOVIES,
   MOVIE_COUNT_PER_STEP,
+  MovieLabel,
   FilterType,
   FilterName,
   FilterEmptyText,
