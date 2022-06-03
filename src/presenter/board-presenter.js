@@ -41,7 +41,7 @@ export default class BoardPresenter {
     this.#movieModel = movieModel;
     this.#commentModel = commentModel;
     this.#filterModel = filterModel;
-    this.#popupPresenter = new PopupPresenter(EntryPoints.FOOTER, this.#handleViewAction);
+    this.#popupPresenter = new PopupPresenter(EntryPoints.FOOTER, this.#commentModel, this.#handleViewAction);
     this.#movieModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -64,21 +64,6 @@ export default class BoardPresenter {
     return filteredMovies;
   }
 
-  get comments() {
-    return this.#commentModel.comments;
-  }
-
-  #getMovieComments = (movie) => {
-    const comments = movie.comments.length
-      ? movie.comments.map((commentId) =>
-        this.comments.find((comment) =>
-          comment.id === commentId
-        )
-      )
-      : [];
-    return comments;
-  };
-
   #renderUser = () => {
     const oldUserComponent = this.#userComponent;
     const watchedMoviesCount = getFilteredMovies(FilterType.HISTORY, this.#movieModel.movies).length;
@@ -99,29 +84,26 @@ export default class BoardPresenter {
   };
 
   #renderMovie = (movie) => {
-    const comments = this.#getMovieComments(movie);
     const moviePresenter = new MoviePresenter(this.#movieListComponent.container, this.#popupPresenter, this.#handleViewAction);
-    moviePresenter.init(movie, comments);
+    moviePresenter.init(movie);
     this.#moviePresenter.set(movie.id, moviePresenter);
   };
 
   #renderTopRatedMovieCard = (movie) => {
-    const comments = this.#getMovieComments(movie);
     const movieTopRatedPresenter = new MoviePresenter(this.#movieListExtraRatingComponent.container, this.#popupPresenter, this.#handleViewAction);
-    movieTopRatedPresenter.init(movie, comments);
+    movieTopRatedPresenter.init(movie);
     this.#movieTopRatedPresenter.set(movie.id, movieTopRatedPresenter);
   };
 
   #renderMostCommentedMovieCard = (movie) => {
-    const comments = this.#getMovieComments(movie);
     const movieMostCommentedPresenter = new MoviePresenter(this.#movieListExtraCommentsComponent.container, this.#popupPresenter, this.#handleViewAction);
-    movieMostCommentedPresenter.init(movie, comments);
+    movieMostCommentedPresenter.init(movie);
     this.#movieMostCommentedPresenter.set(movie.id, movieMostCommentedPresenter);
   };
 
   #renderTopRatedMovies = () => {
     const topMovies = this.#movieModel.movies
-      .filter((movie) => movie.rating > 0)
+      .filter((movie) => movie.totalRating > 0)
       .sort(sortMoviesByRating)
       .slice(0, TOP_MOVIES);
 
@@ -250,8 +232,7 @@ export default class BoardPresenter {
 
   #updatePopup = (data, {restoreState = false, restorePosition = false} = {}) => {
     if (this.#popupPresenter.isPopupActive && this.#popupPresenter.currentMovieId === data.id) {
-      const comments = this.#getMovieComments(data);
-      this.#popupPresenter.init(data, comments);
+      this.#popupPresenter.init(data);
       if (restoreState) {
         this.#popupPresenter.restorePopupState();
       }
@@ -262,10 +243,9 @@ export default class BoardPresenter {
   };
 
   #updateMovieCard = (updatedMovie) => {
-    const comments = this.#getMovieComments(updatedMovie);
 
     if (this.#moviePresenter.has(updatedMovie.id)) {
-      this.#moviePresenter.get(updatedMovie.id).init(updatedMovie, comments);
+      this.#moviePresenter.get(updatedMovie.id).init(updatedMovie);
     }
 
     if (this.#movieTopRatedPresenter.has(updatedMovie.id)) {
@@ -310,6 +290,10 @@ export default class BoardPresenter {
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
+        this.#clearBoard({resetRenderedMovieCount: true, resetSortType: true});
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
         this.#clearBoard({resetRenderedMovieCount: true, resetSortType: true});
         this.#renderBoard();
         break;

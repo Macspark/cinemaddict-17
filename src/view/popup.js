@@ -24,20 +24,21 @@ const createPopupTemplate = (movie, commentsCount) => {
   const {
     poster,
     title,
-    originalTitle,
-    rating,
+    alternativeTitle,
+    totalRating,
     director,
     writers,
-    stars,
-    releaseDate,
-    runningTime,
-    country,
-    genres,
-    fullDescription,
-    ageRestriction,
+    actors,
+    release,
+    runtime,
+    releaseCountry,
+    genre,
+    description,
+    ageRating,
     isWatchlist,
     isWatched,
-    isFavorite
+    isFavorite,
+    comments,
   } = movie;
 
   return (
@@ -51,18 +52,18 @@ const createPopupTemplate = (movie, commentsCount) => {
                 <div class="film-details__poster">
                   <img class="film-details__poster-img" src="${poster}" alt="">
 
-                  <p class="film-details__age">${ageRestriction}</p>
+                  <p class="film-details__age">${ageRating}</p>
                 </div>
 
                 <div class="film-details__info">
                 <div class="film-details__info-head">
                     <div class="film-details__title-wrap">
                       <h3 class="film-details__title">${title}</h3>
-                      <p class="film-details__title-original">Original: ${originalTitle}</p>
+                      <p class="film-details__title-original">Original: ${alternativeTitle}</p>
                     </div>
 
                     <div class="film-details__rating">
-                      <p class="film-details__total-rating">${rating}</p>
+                      <p class="film-details__total-rating">${totalRating}</p>
                     </div>
                 </div>
 
@@ -77,27 +78,27 @@ const createPopupTemplate = (movie, commentsCount) => {
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Actors</td>
-                      <td class="film-details__cell">${stars}</td>
+                      <td class="film-details__cell">${actors}</td>
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Release Date</td>
-                      <td class="film-details__cell">${getHumanDate(releaseDate)}</td>
+                      <td class="film-details__cell">${getHumanDate(release)}</td>
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Runtime</td>
-                      <td class="film-details__cell">${formatMovieRunningTime(runningTime)}</td>
+                      <td class="film-details__cell">${formatMovieRunningTime(runtime)}</td>
                     </tr>
                     <tr class="film-details__row">
                       <td class="film-details__term">Country</td>
-                      <td class="film-details__cell">${country}</td>
+                      <td class="film-details__cell">${releaseCountry}</td>
                     </tr>
                     <tr class="film-details__row">
-                        ${createGenresLayout(genres)}
+                        ${createGenresLayout(genre)}
                     </tr>
                 </table>
 
                 <p class="film-details__film-description">
-                    ${fullDescription}
+                    ${description}
                 </p>
                 </div>
             </div>
@@ -111,7 +112,7 @@ const createPopupTemplate = (movie, commentsCount) => {
 
             <div class="film-details__bottom-container">
               <section class="film-details__comments-wrap">
-                <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
+                <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
                 <ul class="film-details__comments-list">
                   
                 </ul>
@@ -124,17 +125,15 @@ const createPopupTemplate = (movie, commentsCount) => {
 
 export default class PopupView extends AbstractView {
   #movie;
-  #commentsCount;
   scrollTop;
 
   constructor(movie, commentsCount) {
     super();
     this.#movie = movie;
-    this.#commentsCount = commentsCount;
   }
 
   get template() {
-    return createPopupTemplate(this.#movie, this.#commentsCount);
+    return createPopupTemplate(this.#movie);
   }
 
   get newCommentContainerElement() {

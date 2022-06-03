@@ -5,7 +5,7 @@ import he from 'he';
 const createPopupCommentTemplate = (comment) => (
   `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${comment.emoji}.png" width="55" height="55" alt="emoji-${comment.emoji}">
+      <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-${comment.emotion}">
     </span>
     <div>
       <p class="film-details__comment-text">${he.encode(comment.text)}</p>

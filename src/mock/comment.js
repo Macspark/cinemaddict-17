@@ -38,7 +38,7 @@ export const generateComment = () => {
   return {
     id: commentId,
     text: getRandomArrayElement(TEXTS),
-    emoji: getRandomArrayElement(EMOTIONS),
+    emotion: getRandomArrayElement(EMOTIONS),
     author: getRandomArrayElement(AUTHORS),
     date: generateDate()
   };

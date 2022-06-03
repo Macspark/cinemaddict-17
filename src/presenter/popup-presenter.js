@@ -15,12 +15,14 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   #oldScrollTop = 0;
   #currentMovieId = -1;
   #isPopupActive = false;
+  #commentModel;
 
-  constructor(container, changeData) {
+  constructor(container, commentModel, changeData) {
     super(container, changeData);
+    this.#commentModel = commentModel;
   }
 
-  init = (movie, comments = this._comments) => {
+  init = (movie) => {
     if (this.#popupComponent) {
       this.#oldScrollTop = this.#popupComponent.element.scrollTop;
     }
@@ -34,16 +36,21 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     }
 
     this._movie = movie;
-    this._comments = comments;
 
     this.#renderPopup(movie);
-    this.#renderComments(comments);
-    this.#renderNewComment();
 
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
     this.#isPopupActive = true;
     this.#currentMovieId = this._movie.id;
+
+    this.#commentModel
+      .getMovieComments(movie.id)
+      .then((comments) => {
+        console.log(comments);
+        this.#renderComments(comments);
+        this.#renderNewComment();
+      });
   };
 
   restorePopupState = () => {
@@ -57,7 +64,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #renderPopup = (movie) => {
-    this.#popupComponent = new PopupView(movie, this._comments.length);
+    this.#popupComponent = new PopupView(movie);
     this.#popupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this.#popupComponent.setWatchedClickHandler(this._handleWatchedClick);
     this.#popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -72,9 +79,11 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #renderComment = (comment) => {
-    const popupCommentView = new PopupCommentView(comment);
-    popupCommentView.setCommentRemoveHandler(this.#handleCommentRemove);
-    render(popupCommentView, this.#popupComponent.commentsContainerElement, RenderPosition.BEFOREEND);
+    if (comment) {
+      const popupCommentView = new PopupCommentView(comment);
+      popupCommentView.setCommentRemoveHandler(this.#handleCommentRemove);
+      render(popupCommentView, this.#popupComponent.commentsContainerElement, RenderPosition.BEFOREEND);
+    }
   };
 
   #renderNewComment = () => {

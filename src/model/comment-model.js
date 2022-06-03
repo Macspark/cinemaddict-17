@@ -1,11 +1,19 @@
-import { generateComment } from '../mock/comment.js';
-
 export default class CommentModel {
-  #comments = Array.from({length: 3}, generateComment);
+  #commentsApiService;
+  #comments;
 
-  get comments() {
-    return this.#comments;
+  constructor(commentsApiService) {
+    this.#commentsApiService = commentsApiService;
   }
+
+  getMovieComments = async (movieId) => {
+    try {
+      const comments = await this.#commentsApiService.getMovieComments(movieId);
+      return comments.map(this.#adaptToClient);
+    } catch(err) {
+      return [];
+    }
+  };
 
   addComment = (update) => {
     this.#comments = [
@@ -26,4 +34,24 @@ export default class CommentModel {
       ...this.#comments.slice(index + 1),
     ];
   };
+
+  #adaptToClient = (comment) => {
+    const adaptedComment = {...comment,
+      text: comment.comment,
+    };
+
+    delete adaptedComment.comment;
+
+    return adaptedComment;
+  }
+
+  #adaptToServer = (comment) => {
+    const adaptedComment = {...comment,
+      comment: comment.text,
+    };
+
+    delete adaptedComment.text;
+
+    return adaptedComment;
+  }
 }
