@@ -32,8 +32,12 @@ export default class CommentModel extends Observable {
   };
 
   deleteCommentFromMovie = async (updateType, commentId) => {
-    await this.#commentsApiService.removeCommentFromMovie(commentId);
-    this._notify(updateType);
+    try {
+      await this.#commentsApiService.removeCommentFromMovie(commentId);
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete comment');
+    }
   };
 
   #adaptToClient = (comment) => {

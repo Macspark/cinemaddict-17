@@ -1,7 +1,12 @@
 const TOP_MOVIES = 2;
 const MOVIE_COUNT_PER_STEP = 5;
-const AUTHORIZATION = 'Basic fw23fhja221j';
+const AUTHORIZATION = 'Basic fw23fhja22';
 const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict';
+
+const BlockerTimeLimit = {
+  LOWER_LIMIT: 300,
+  UPPER_LIMIT: 1000,
+};
 
 const MovieLabel = {
   GENRE: 'Genre',
@@ -76,6 +81,7 @@ export {
   END_POINT,
   TOP_MOVIES,
   MOVIE_COUNT_PER_STEP,
+  BlockerTimeLimit,
   MovieLabel,
   FilterType,
   FilterName,

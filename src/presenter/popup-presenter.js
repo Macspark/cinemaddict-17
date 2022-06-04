@@ -10,7 +10,7 @@ import { UserAction, UpdateType } from '../const.js';
 export default class PopupPresenter extends AbstractMoviePresenter {
   #popupComponent = null;
   #controlsComponent = null;
-  #popupNewCommentComponent = null;
+  #newCommentComponent = null;
   #commentCountView = null;
   #oldState = {};
   #currentMovieId = -1;
@@ -24,8 +24,8 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   }
 
   init = (movie) => {
-    if (this.#popupNewCommentComponent) {
-      this.#oldState = this.#popupNewCommentComponent.state;
+    if (this.#newCommentComponent) {
+      this.#oldState = this.#newCommentComponent.state;
     }
 
     if (this.#isPopupActive) {
@@ -64,7 +64,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #renderComments = (comments) => {
-    this.#renderedComments = new Set();
+    this.#renderedComments = new Map();
     this.#renderCommentCount(comments.length);
     comments.forEach((comment) => {
       this.#renderComment(comment);
@@ -84,7 +84,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
       const popupCommentView = new PopupCommentView(comment);
       popupCommentView.setCommentRemoveHandler(this.#handleCommentRemove);
       render(popupCommentView, this.#popupComponent.commentsContainerElement, RenderPosition.BEFOREEND);
-      this.#renderedComments.add(popupCommentView);
+      this.#renderedComments.set(comment.id, popupCommentView);
     }
   };
 
@@ -94,9 +94,9 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #renderNewComment = () => {
-    this.#popupNewCommentComponent = new PopupNewCommentView(this.#oldState);
-    this.#popupNewCommentComponent.setCommentSubmitHandler(this.#handleCommentSubmit);
-    render(this.#popupNewCommentComponent, this.#popupComponent.commentWrapElement, RenderPosition.BEFOREEND);
+    this.#newCommentComponent = new PopupNewCommentView(this.#oldState);
+    this.#newCommentComponent.setCommentSubmitHandler(this.#handleCommentSubmit);
+    render(this.#newCommentComponent, this.#popupComponent.commentWrapElement, RenderPosition.BEFOREEND);
   };
 
   #closePopup = () => {
@@ -130,6 +130,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   #handleCommentSubmit = (data) => {
     const movieId = this._movie.id;
 
+    this.#setSubmitting();
     this._changeData(
       UserAction.ADD_COMMENT,
       UpdateType.MINOR,
@@ -138,6 +139,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #handleCommentRemove = (commentId) => {
+    this.#setDeleting(commentId);
     this._changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.MINOR,
@@ -160,7 +162,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
 
     if (updateType === UpdateType.MINOR) {
       this.#oldState = {};
-      remove(this.#popupNewCommentComponent);
+      remove(this.#newCommentComponent);
       this.#renderNewComment();
     }
   };
@@ -171,15 +173,48 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #updateComments = (data) => {
-    this.#clearComments();
     if (data === null) {
       this.#commentModel
         .getMovieComments(this._movie.id)
         .then((comments) => {
+          this.#clearComments();
           this.#renderComments(comments);
         });
       return;
     }
+    this.#clearComments();
     this.#renderComments(data);
+  };
+
+  #setDeleting = (commentId) => {
+    const comment = this.#renderedComments.get(commentId);
+    comment.updateElement({
+      isDisabled: true,
+      isDeleting: true,
+    });
+  };
+
+  #setSubmitting = () => {
+    this.#newCommentComponent
+      .updateElement({
+        isDisabled: true,
+      });
+  };
+
+  unblockComment = (commentId) => {
+    const comment = this.#renderedComments.get(commentId);
+    comment.updateElement({
+      isDisabled: false,
+      isDeleting: false,
+    });
+    comment.shake();
+  };
+
+  unblockNewCommentForm = () => {
+    this.#newCommentComponent
+      .updateElement({
+        isDisabled: false,
+      });
+    this.#newCommentComponent.shake();
   };
 }

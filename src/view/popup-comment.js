@@ -1,8 +1,8 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getHumanRelativeTime } from '../utils/time.js';
 import he from 'he';
 
-const createPopupCommentTemplate = (comment) => (
+const createPopupCommentTemplate = (comment, state) => (
   `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-${comment.emotion}">
@@ -12,13 +12,13 @@ const createPopupCommentTemplate = (comment) => (
       <p class="film-details__comment-info">
           <span class="film-details__comment-author">${comment.author}</span>
           <span class="film-details__comment-day">${getHumanRelativeTime(comment.date)}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button class="film-details__comment-delete" ${state.isDisabled ? 'disabled' : ''}>${state.isDeleting ? 'Deleting' : 'Delete'}</button>
       </p>
     </div>
   </li>`
 );
 
-export default class PopupCommentView extends AbstractView {
+export default class PopupCommentView extends AbstractStatefulView {
   #comment;
 
   constructor(comment) {
@@ -27,7 +27,7 @@ export default class PopupCommentView extends AbstractView {
   }
 
   get template() {
-    return createPopupCommentTemplate(this.#comment);
+    return createPopupCommentTemplate(this.#comment, this._state);
   }
 
   setCommentRemoveHandler = (callback) => {
@@ -39,5 +39,9 @@ export default class PopupCommentView extends AbstractView {
   #handleRemoveComment = (evt) => {
     evt.preventDefault();
     this._callback.removeComment(this.#comment.id);
+  };
+
+  _restoreHandlers = () => {
+    this.setCommentRemoveHandler(this._callback.removeComment);
   };
 }

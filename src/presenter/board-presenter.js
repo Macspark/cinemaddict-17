@@ -1,5 +1,5 @@
 import { render, replace, remove, RenderPosition } from '../framework/render.js';
-import { TOP_MOVIES, MOVIE_COUNT_PER_STEP, SortType, FilterType, UpdateType, UserAction } from '../const.js';
+import { TOP_MOVIES, MOVIE_COUNT_PER_STEP, SortType, FilterType, UpdateType, UserAction, BlockerTimeLimit } from '../const.js';
 import { sortMoviesByRating, sortMoviesByComments, sortMoviesByDate } from '../utils/movie.js';
 import MovieContainerView from '../view/movie-container.js';
 import MovieListView from '../view/movie-list.js';
@@ -12,6 +12,7 @@ import PopupPresenter from './popup-presenter.js';
 import { getFilteredMovies } from '../utils/filter.js';
 import UserView from '../view/user.js';
 import LoadingView from '../view/loading.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class BoardPresenter {
   #EntryPoints;
@@ -36,6 +37,7 @@ export default class BoardPresenter {
   #movieEmptyComponent = null;
   #showMoreButtonComponent = new ShowMoreButtonView();
   #movieSortComponent = null;
+  #uiBlocker = new UiBlocker(BlockerTimeLimit.LOWER_LIMIT, BlockerTimeLimit.UPPER_LIMIT);
 
   #popupPresenter = null;
 
@@ -48,7 +50,6 @@ export default class BoardPresenter {
     this.#movieModel.addObserver(this.#handleModelEvent);
     this.#movieModel.addObserver(this.#popupPresenter.handleMovieModelEvent);
     this.#commentModel.addObserver(this.#movieModel.refreshMovieModel);
-    this.#commentModel.addObserver(this.#handleModelEvent);
     this.#commentModel.addObserver(this.#popupPresenter.handleCommentModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -263,18 +264,28 @@ export default class BoardPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
         this.#movieModel.updateMovie(updateType, update.updatedMovie);
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentModel.addCommentToMovie(updateType, update.movieId, update.data);
+        try {
+          await this.#commentModel.addCommentToMovie(updateType, update.movieId, update.data);
+        } catch(err) {
+          this.#popupPresenter.unblockNewCommentForm();
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentModel.deleteCommentFromMovie(updateType, update.commentId);
+        try {
+          await this.#commentModel.deleteCommentFromMovie(updateType, update.commentId);
+        } catch(err) {
+          this.#popupPresenter.unblockComment(update.commentId);
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
