@@ -3,8 +3,8 @@ import { Method } from '../const.js';
 
 export default class CommentsApiService extends ApiService {
   getMovieComments = (movieId) => {
-    this._load({url: `comments/${movieId}`})
-      .then(ApiService.parseResponse);
+    const response = this._load({url: `comments/${movieId}`}).then(ApiService.parseResponse);
+    return response;
   };
 
   addCommentToMovie = async (movieId, comment) => {
