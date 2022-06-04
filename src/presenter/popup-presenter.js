@@ -2,17 +2,16 @@ import { render, remove, RenderPosition } from '../framework/render.js';
 import PopupView from '../view/popup.js';
 import PopupControlsView from '../view/popup-controls.js';
 import PopupNewCommentView from '../view/popup-new-comment.js';
+import PopupCommentCountView from '../view/popup-comment-count.js';
 import PopupCommentView from '../view/popup-comment.js';
 import AbstractMoviePresenter from '../framework/presenter/abstract-movie-presenter.js';
-import { findIndexByValue, removeIndexFromArray } from '../utils/common.js';
 import { UserAction, UpdateType } from '../const.js';
-import { nanoid } from 'nanoid';
-import dayjs from 'dayjs';
 
 export default class PopupPresenter extends AbstractMoviePresenter {
   #popupComponent = null;
   #controlsComponent = null;
   #popupNewCommentComponent = null;
+  #commentCountView = null;
   #oldState = {};
   #currentMovieId = -1;
   #isPopupActive = false;
@@ -62,13 +61,22 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this.#controlsComponent.setWatchedClickHandler(this._handleWatchedClick);
     this.#controlsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     render(this.#controlsComponent, this.#popupComponent.bottomContainerElement, RenderPosition.BEFOREBEGIN);
-  }
+  };
 
   #renderComments = (comments) => {
     this.#renderedComments = new Set();
+    this.#renderCommentCount(comments.length);
     comments.forEach((comment) => {
       this.#renderComment(comment);
     });
+  };
+
+  #renderCommentCount = (count) => {
+    if (this.#commentCountView) {
+      remove(this.#commentCountView);
+    }
+    this.#commentCountView = new PopupCommentCountView(count);
+    render(this.#commentCountView, this.#popupComponent.commentWrapElement, RenderPosition.AFTERBEGIN);
   };
 
   #renderComment = (comment) => {
@@ -83,12 +91,12 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   #clearComments = () => {
     this.#renderedComments.forEach((comment) => remove(comment));
     this.#renderedComments.clear();
-  }
+  };
 
   #renderNewComment = () => {
     this.#popupNewCommentComponent = new PopupNewCommentView(this.#oldState);
-    this.#popupNewCommentComponent.setCommentSubmitHandler(this.#handleCommentSubmit); 
-    render(this.#popupNewCommentComponent, this.#popupComponent.newCommentContainerElement, RenderPosition.BEFOREEND);
+    this.#popupNewCommentComponent.setCommentSubmitHandler(this.#handleCommentSubmit);
+    render(this.#popupNewCommentComponent, this.#popupComponent.commentWrapElement, RenderPosition.BEFOREEND);
   };
 
   #closePopup = () => {
@@ -137,17 +145,19 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     );
   };
 
-  //Эта хуйня ожидает, что тут будут комменты. И они есть при POST. Но при DELETE с сервера не приходит массив с комментами ...
-
-  handleMovieModelEvent = (updateType, data) => {
+  handleMovieModelEvent = (updateType, data = null) => {
     if (data && this.currentMovieId === data.id) {
       this.#updateControls(data);
     }
+    if (data === null) {
+      return;
+    }
+    this._movie = data;
   };
 
-  handleCommentModelEvent = (updateType, data) => {
+  handleCommentModelEvent = (updateType, data = null) => {
     this.#updateComments(data);
-    
+
     if (updateType === UpdateType.MINOR) {
       this.#oldState = {};
       remove(this.#popupNewCommentComponent);
@@ -158,10 +168,18 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   #updateControls = (movie) => {
     remove(this.#controlsComponent);
     this.#renderControls(movie);
-  }
+  };
 
-  #updateComments = (comments) => {
+  #updateComments = (data) => {
     this.#clearComments();
-    this.#renderComments(comments);
-  }
+    if (data === null) {
+      this.#commentModel
+        .getMovieComments(this._movie.id)
+        .then((comments) => {
+          this.#renderComments(comments);
+        });
+      return;
+    }
+    this.#renderComments(data);
+  };
 }

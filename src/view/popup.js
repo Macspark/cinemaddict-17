@@ -28,13 +28,12 @@ const createPeopleLayout = (array) => {
   const layout = array.reduce((result, element) => (
     `${result}
       ${element}, `
-  ), '').replace(/,\s*$/, "");
+  ), '').replace(/,\s*$/, '');
 
   return layout;
-}
+};
 
 const createPopupTemplate = (movie) => {
-  console.log(movie)
   const {
     poster,
     title,
@@ -49,7 +48,6 @@ const createPopupTemplate = (movie) => {
     genre,
     description,
     ageRating,
-    comments,
   } = movie;
 
   return (
@@ -117,7 +115,6 @@ const createPopupTemplate = (movie) => {
 
             <div class="film-details__bottom-container">
               <section class="film-details__comments-wrap">
-                <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
                 <ul class="film-details__comments-list">
                   
                 </ul>
@@ -141,7 +138,7 @@ export default class PopupView extends AbstractView {
     return createPopupTemplate(this.#movie);
   }
 
-  get newCommentContainerElement() {
+  get commentWrapElement() {
     return this.element.querySelector('.film-details__comments-wrap');
   }
 

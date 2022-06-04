@@ -15,7 +15,7 @@ const EntryPoints = {
   FOOTER: document.querySelector('.footer')
 };
 
-const commentsApiService = new CommentsApiService(END_POINT, AUTHORIZATION)
+const commentsApiService = new CommentsApiService(END_POINT, AUTHORIZATION);
 const commentModel = new CommentModel(commentsApiService);
 const moviesApiService = new MoviesApiService(END_POINT, AUTHORIZATION);
 const movieModel = new MovieModel(moviesApiService);

@@ -3,9 +3,9 @@ import { Method } from '../const.js';
 
 export default class CommentsApiService extends ApiService {
   getMovieComments = (movieId) => {
-    return this._load({url: `comments/${movieId}`})
+    this._load({url: `comments/${movieId}`})
       .then(ApiService.parseResponse);
-  }
+  };
 
   addCommentToMovie = async (movieId, comment) => {
     const response = await this._load({
@@ -21,7 +21,7 @@ export default class CommentsApiService extends ApiService {
   };
 
   removeCommentFromMovie = async (commentId) => {
-    const response = await this._load({
+    await this._load({
       url: `comments/${commentId}`,
       method: Method.DELETE,
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -30,7 +30,7 @@ export default class CommentsApiService extends ApiService {
 
   #adaptToServer = (comment) => {
     const adaptedComment = {...comment,
-      comment: comment.text,
+      'comment': comment.text,
     };
 
     delete adaptedComment.text;

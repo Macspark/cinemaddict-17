@@ -23,7 +23,7 @@ export default class CommentModel extends Observable {
   addCommentToMovie = async (updateType, movieId, comment) => {
     try {
       const response = await this.#commentsApiService.addCommentToMovie(movieId, comment);
-      const update = this.#adaptToClient(response); 
+      const update = this.#adaptToClient(response);
       const updatedComments = update.comments.map(this.#adaptToClient);
       this._notify(updateType, updatedComments);
     } catch(err) {
@@ -32,20 +32,17 @@ export default class CommentModel extends Observable {
   };
 
   deleteCommentFromMovie = async (updateType, commentId) => {
-   
-      const response = await this.#commentsApiService.removeCommentFromMovie(commentId);
-      console.log(response);
-      this._notify(updateType); 
-
+    await this.#commentsApiService.removeCommentFromMovie(commentId);
+    this._notify(updateType);
   };
 
   #adaptToClient = (comment) => {
     const adaptedComment = {...comment,
-      text: comment.comment,
+      'text': comment.comment,
     };
 
     delete adaptedComment.comment;
 
     return adaptedComment;
-  }
+  };
 }

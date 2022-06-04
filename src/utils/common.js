@@ -42,10 +42,10 @@ const flattenObject = (obj) => {
     } else {
       flattened[key] = value;
     }
-  })
+  });
 
   return flattened;
-}
+};
 
 export {
   flattenObject,

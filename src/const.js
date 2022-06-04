@@ -7,7 +7,7 @@ const MovieLabel = {
   GENRE: 'Genre',
   ACTOR: 'Actor',
   WRITER: 'Writer',
-}
+};
 
 const FilterType = {
   ALL: 'all',

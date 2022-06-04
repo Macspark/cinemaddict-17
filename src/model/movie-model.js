@@ -23,7 +23,7 @@ export default class MovieModel extends Observable {
     }
 
     return this.#movies[index];
-  }
+  };
 
   init = async () => {
     try {
@@ -68,17 +68,17 @@ export default class MovieModel extends Observable {
 
   #adaptToClient = (movie) => {
     let adaptedMovie = flattenObject(movie);
-    
+
     adaptedMovie = {...adaptedMovie,
-      ageRating: adaptedMovie.age_rating,
-      alternativeTitle: adaptedMovie.alternative_title,
-      releaseCountry: adaptedMovie.release_country,
-      totalRating: adaptedMovie.total_rating,
-      isWatched: adaptedMovie.already_watched,
-      isWatchlist: adaptedMovie.watchlist,
-      isFavorite: adaptedMovie.favorite,
-      watchingDate: adaptedMovie.watching_date,
-      release: adaptedMovie.date,
+      'ageRating': adaptedMovie.age_rating,
+      'alternativeTitle': adaptedMovie.alternative_title,
+      'releaseCountry': adaptedMovie.release_country,
+      'totalRating': adaptedMovie.total_rating,
+      'isWatched': adaptedMovie.already_watched,
+      'isWatchlist': adaptedMovie.watchlist,
+      'isFavorite': adaptedMovie.favorite,
+      'watchingDate': adaptedMovie.watching_date,
+      'release': adaptedMovie.date,
     };
 
     delete adaptedMovie.age_rating;
@@ -92,5 +92,5 @@ export default class MovieModel extends Observable {
     delete adaptedMovie.date;
 
     return adaptedMovie;
-  }
+  };
 }
