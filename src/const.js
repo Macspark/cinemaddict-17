@@ -69,7 +69,7 @@ const UserRankRequirement = {
   MOVIE_BUFF: 21,
 };
 
-const Method = {
+const RequestMethod = {
   GET: 'GET',
   PUT: 'PUT',
   POST: 'POST',
@@ -91,6 +91,6 @@ export {
   UpdateType,
   UserRankTitle,
   UserRankRequirement,
-  Method,
+  RequestMethod,
 };
 

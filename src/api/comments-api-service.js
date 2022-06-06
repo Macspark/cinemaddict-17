@@ -1,5 +1,5 @@
 import ApiService from '../framework/api-service.js';
-import { Method } from '../const.js';
+import { RequestMethod } from '../const.js';
 
 export default class CommentsApiService extends ApiService {
   getMovieComments = (movieId) => {
@@ -10,7 +10,7 @@ export default class CommentsApiService extends ApiService {
   addCommentToMovie = async (movieId, comment) => {
     const response = await this._load({
       url: `comments/${movieId}`,
-      method: Method.POST,
+      method: RequestMethod.POST,
       body: JSON.stringify(this.#adaptToServer(comment)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
@@ -23,7 +23,7 @@ export default class CommentsApiService extends ApiService {
   removeCommentFromMovie = async (commentId) => {
     await this._load({
       url: `comments/${commentId}`,
-      method: Method.DELETE,
+      method: RequestMethod.DELETE,
       headers: new Headers({'Content-Type': 'application/json'}),
     });
   };

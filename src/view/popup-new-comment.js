@@ -64,11 +64,11 @@ export default class PopupNewCommentView extends AbstractStatefulView {
 
   setCommentSubmitHandler = (callback) => {
     this._callback.submitComment = callback;
-    this.element.addEventListener('keydown', this.#onCtrlEnterKeyDown);
+    this.element.addEventListener('keydown', this.#onSubmitShortcut);
   };
 
-  #onCtrlEnterKeyDown = (evt) => {
-    if (evt.ctrlKey && evt.keyCode === 13) {
+  #onSubmitShortcut = (evt) => {
+    if ((evt.ctrlKey && evt.keyCode === 13) || (evt.metaKey && evt.keyCode === 13)) {
       evt.preventDefault();
       this.#commentSubmitHandler();
     }
