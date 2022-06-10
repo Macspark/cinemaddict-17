@@ -1,10 +1,13 @@
 import { render } from './framework/render.js';
+import { AUTHORIZATION, END_POINT } from './const.js';
 import StatisticsView from './view/statistics.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import MovieModel from './model/movie-model.js';
 import CommentModel from './model/comment-model.js';
 import FilterModel from './model/filter-model.js';
+import MoviesApiService from './api/movies-api-service.js';
+import CommentsApiService from './api/comments-api-service.js';
 
 const EntryPoints = {
   HEADER: document.querySelector('.header'),
@@ -12,8 +15,10 @@ const EntryPoints = {
   FOOTER: document.querySelector('.footer')
 };
 
-const commentModel = new CommentModel();
-const movieModel = new MovieModel();
+const commentsApiService = new CommentsApiService(END_POINT, AUTHORIZATION);
+const commentModel = new CommentModel(commentsApiService);
+const moviesApiService = new MoviesApiService(END_POINT, AUTHORIZATION);
+const movieModel = new MovieModel(moviesApiService);
 const filterModel = new FilterModel();
 
 const statisticsView = new StatisticsView(movieModel.movies.length);
@@ -24,3 +29,4 @@ const boardPresenter = new BoardPresenter(EntryPoints, movieModel, commentModel,
 render(statisticsView, EntryPoints.FOOTER);
 filterPresenter.init();
 boardPresenter.init();
+movieModel.init();

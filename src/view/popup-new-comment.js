@@ -1,42 +1,43 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
-const createNewCommentPopupTemplate = (newComment) => {
+const createNewCommentPopupTemplate = (state) => {
   const {
     text = null,
-    emoji = null
-  } = newComment;
+    emotion = null,
+    isDisabled = false,
+  } = state;
 
-  const emojiImage = emoji
-    ? `<img src="images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">`
+  const emotionImage = emotion
+    ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`
     : '';
 
   const newCommentLayout = `
     <div class="film-details__new-comment">
       <div class="film-details__add-emoji-label">
-        ${emojiImage}
+        ${emotionImage}
       </div>
 
       <label class="film-details__comment-label">
-        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${text ? text : ''}</textarea>
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isDisabled ? 'disabled' : ''}>${text ? text : ''}</textarea>
       </label>
 
       <div class="film-details__emoji-list">
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${emoji === 'smile' ? 'checked' : ''}>
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${emotion === 'smile' ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
         <label class="film-details__emoji-label" for="emoji-smile">
           <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
         </label>
 
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${emoji === 'sleeping' ? 'checked' : ''}>
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${emotion === 'sleeping' ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
         <label class="film-details__emoji-label" for="emoji-sleeping">
           <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
         </label>
 
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${emoji === 'puke' ? 'checked' : ''}>
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${emotion === 'puke' ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
         <label class="film-details__emoji-label" for="emoji-puke">
           <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
         </label>
 
-        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${emoji === 'angry' ? 'checked' : ''}>
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${emotion === 'angry' ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
         <label class="film-details__emoji-label" for="emoji-angry">
           <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
         </label>
@@ -46,11 +47,11 @@ const createNewCommentPopupTemplate = (newComment) => {
   return newCommentLayout;
 };
 
-export default class PopupCommentsView extends AbstractStatefulView {
-  constructor(state) {
+export default class PopupNewCommentView extends AbstractStatefulView {
+  constructor(state = {}) {
     super();
     this.#setInnerHandlers();
-    this._setState(state);
+    this.updateElement(state);
   }
 
   get template() {
@@ -61,25 +62,31 @@ export default class PopupCommentsView extends AbstractStatefulView {
     return this._state;
   }
 
-  restoreState = (state) => {
-    this.updateElement(state);
-  };
-
   setCommentSubmitHandler = (callback) => {
     this._callback.submitComment = callback;
-    this.element.addEventListener('keydown', this.#onCtrlEnterKeyDown);
+    this.element.addEventListener('keydown', this.#onSubmitShortcut);
   };
 
-  #onCtrlEnterKeyDown = (evt) => {
-    if (evt.ctrlKey && evt.keyCode === 13) {
+  #onSubmitShortcut = (evt) => {
+    if ((evt.ctrlKey && evt.keyCode === 13) || (evt.metaKey && evt.keyCode === 13)) {
       evt.preventDefault();
       this.#commentSubmitHandler();
     }
   };
 
   #commentSubmitHandler = () => {
-    const newComment = this._state;
+    const newComment = this.#convertStateToComment(this._state);
+    if (!newComment.text || !newComment.emotion) {
+      this.shake();
+      return;
+    }
     this._callback.submitComment(newComment);
+  };
+
+  #convertStateToComment = (state) => {
+    delete state.isDisabled;
+    delete state.isSubmitting;
+    return state;
   };
 
   #newCommentInputHandler = (evt) => {
@@ -95,7 +102,7 @@ export default class PopupCommentsView extends AbstractStatefulView {
     }
 
     this.updateElement({
-      emoji: evt.target.value,
+      emotion: evt.target.value,
     });
   };
 

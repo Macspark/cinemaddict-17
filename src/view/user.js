@@ -1,15 +1,16 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import { UserRankTitle, UserRankRequirement } from '../const.js';
 
 const getUserRank = (watchedMoviesCount) => {
   switch (true) {
-    case (watchedMoviesCount > 0 && watchedMoviesCount <= 10):
-      return 'Novice';
-    case (watchedMoviesCount > 10 && watchedMoviesCount <= 20):
-      return 'Fan';
-    case (watchedMoviesCount > 20):
-      return 'Movie Buff';
+    case (watchedMoviesCount >= UserRankRequirement.MOVIE_BUFF):
+      return UserRankTitle.MOVIE_BUFF;
+    case (watchedMoviesCount >= UserRankRequirement.FAN):
+      return UserRankTitle.FAN;
+    case (watchedMoviesCount >= UserRankRequirement.NOVICE):
+      return UserRankTitle.NOVICE;
     default:
-      return '';
+      return UserRankTitle.NONE;
   }
 };
 

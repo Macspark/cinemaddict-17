@@ -5,11 +5,11 @@ const createMovieCardTemplate = (movie) => {
   const {
     poster,
     title,
-    rating,
-    releaseDate,
-    runningTime,
-    genres,
-    fullDescription,
+    totalRating,
+    release,
+    runtime,
+    genre,
+    description,
     comments,
     isWatchlist,
     isWatched,
@@ -17,22 +17,22 @@ const createMovieCardTemplate = (movie) => {
   } = movie;
   const MAX_DESCRIPTION_LENGTH = 139;
 
-  const description = fullDescription.length > MAX_DESCRIPTION_LENGTH
-    ? `${fullDescription.slice(0, MAX_DESCRIPTION_LENGTH)}…`
-    : fullDescription;
+  const formattedDescription = description.length > MAX_DESCRIPTION_LENGTH
+    ? `${description.slice(0, MAX_DESCRIPTION_LENGTH)}…`
+    : description;
 
   return (
     `<article class="film-card">
       <a class="film-card__link">
         <h3 class="film-card__title">${title}</h3>
-        <p class="film-card__rating">${rating}</p>
+        <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
-          <span class="film-card__year">${getYear(releaseDate)}</span>
-          <span class="film-card__duration">${formatMovieRunningTime(runningTime)}</span>
-          <span class="film-card__genre">${genres[0]}</span>
+          <span class="film-card__year">${getYear(release)}</span>
+          <span class="film-card__duration">${formatMovieRunningTime(runtime)}</span>
+          <span class="film-card__genre">${genre[0]}</span>
         </p>
         <img src="${poster}" alt="" class="film-card__poster">
-        <p class="film-card__description">${description}</p>
+        <p class="film-card__description">${formattedDescription}</p>
         <span class="film-card__comments">${comments.length} comments</span>
       </a>
       <div class="film-card__controls">

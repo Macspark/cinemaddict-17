@@ -1,33 +1,31 @@
 import { render, remove, RenderPosition } from '../framework/render.js';
 import PopupView from '../view/popup.js';
+import PopupControlsView from '../view/popup-controls.js';
 import PopupNewCommentView from '../view/popup-new-comment.js';
+import PopupCommentCountView from '../view/popup-comment-count.js';
 import PopupCommentView from '../view/popup-comment.js';
 import AbstractMoviePresenter from '../framework/presenter/abstract-movie-presenter.js';
-import { findIndexByValue, removeIndexFromArray } from '../utils/common.js';
 import { UserAction, UpdateType } from '../const.js';
-import { nanoid } from 'nanoid';
-import dayjs from 'dayjs';
 
 export default class PopupPresenter extends AbstractMoviePresenter {
   #popupComponent = null;
-  #popupNewCommentComponent = null;
-  #popupCommentViewMap = new Set();
-  #oldState = null;
-  #oldScrollTop = 0;
+  #controlsComponent = null;
+  #newCommentComponent = null;
+  #commentCountView = null;
+  #oldState = {};
   #currentMovieId = -1;
   #isPopupActive = false;
+  #commentModel;
+  #renderedComments;
 
-  constructor(container, changeData) {
+  constructor(container, commentModel, changeData) {
     super(container, changeData);
+    this.#commentModel = commentModel;
   }
 
-  init = (movie, comments = this._comments) => {
-    if (this.#popupComponent) {
-      this.#oldScrollTop = this.#popupComponent.element.scrollTop;
-    }
-
-    if (this.#popupNewCommentComponent) {
-      this.#oldState = this.#popupNewCommentComponent.state;
+  init = (movie) => {
+    if (this.#newCommentComponent) {
+      this.#oldState = this.#newCommentComponent.state;
     }
 
     if (this.#isPopupActive) {
@@ -35,11 +33,15 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     }
 
     this._movie = movie;
-    this._comments = comments;
 
     this.#renderPopup(movie);
-    this.#renderComments(comments);
-    this.#renderNewComment();
+    this.#renderControls(movie);
+    this.#commentModel
+      .getMovieComments(movie.id)
+      .then((comments) => {
+        this.#renderComments(comments);
+        this.#renderNewComment();
+      });
 
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
@@ -47,65 +49,63 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this.#currentMovieId = this._movie.id;
   };
 
-  restorePopupState = () => {
-    if (this.#oldState) {
-      this.#popupNewCommentComponent.restoreState(this.#oldState);
-    }
-  };
-
-  restorePopupPosition = () => {
-    this.#popupComponent.element.scrollTop = this.#oldScrollTop;
-  };
-
   #renderPopup = (movie) => {
-    this.#popupComponent = new PopupView(movie, this._comments.length);
-    this.#popupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this.#popupComponent.setWatchedClickHandler(this._handleWatchedClick);
-    this.#popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this.#popupComponent = new PopupView(movie);
     this.#popupComponent.setCloseClickHandler(this.#handleCloseButtonClick);
     render(this.#popupComponent, this._container, RenderPosition.AFTEREND);
   };
 
+  #renderControls = (movie) => {
+    this.#controlsComponent = new PopupControlsView(movie);
+    this.#controlsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this.#controlsComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this.#controlsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    render(this.#controlsComponent, this.#popupComponent.bottomContainerElement, RenderPosition.BEFOREBEGIN);
+  };
+
   #renderComments = (comments) => {
+    this.#renderedComments = new Map();
+    this.#renderCommentCount(comments.length);
     comments.forEach((comment) => {
       this.#renderComment(comment);
     });
   };
 
+  #renderCommentCount = (count) => {
+    if (this.#commentCountView) {
+      remove(this.#commentCountView);
+    }
+    this.#commentCountView = new PopupCommentCountView(count);
+    render(this.#commentCountView, this.#popupComponent.commentWrapElement, RenderPosition.AFTERBEGIN);
+  };
+
   #renderComment = (comment) => {
-    const popupCommentView = new PopupCommentView(comment);
-    popupCommentView.setCommentRemoveHandler(this.#handleCommentRemove);
-    render(popupCommentView, this.#popupComponent.commentsContainerElement, RenderPosition.BEFOREEND);
-    this.#popupCommentViewMap.add(popupCommentView);
+    if (comment) {
+      const popupCommentView = new PopupCommentView(comment);
+      popupCommentView.setCommentRemoveHandler(this.#handleCommentRemove);
+      render(popupCommentView, this.#popupComponent.commentsContainerElement, RenderPosition.BEFOREEND);
+      this.#renderedComments.set(comment.id, popupCommentView);
+    }
+  };
+
+  #clearComments = () => {
+    this.#renderedComments.forEach((comment) => remove(comment));
+    this.#renderedComments.clear();
   };
 
   #renderNewComment = () => {
-    this.#popupNewCommentComponent = new PopupNewCommentView();
-    this.#popupNewCommentComponent.setCommentSubmitHandler(this.#handleCommentSubmit);
-    render(this.#popupNewCommentComponent, this.#popupComponent.newCommentContainerElement, RenderPosition.BEFOREEND);
+    this.#newCommentComponent = new PopupNewCommentView(this.#oldState);
+    this.#newCommentComponent.setCommentSubmitHandler(this.#handleCommentSubmit);
+    render(this.#newCommentComponent, this.#popupComponent.commentWrapElement, RenderPosition.BEFOREEND);
   };
 
   #closePopup = () => {
-    this.#clearPopupComponents();
+    remove(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDown);
     this.#isPopupActive = false;
     this.#currentMovieId = -1;
-  };
-
-  #clearPopupComponents = () => {
-    this.#clearCommentsViewMap();
-    remove(this.#popupComponent);
-    remove(this.#popupNewCommentComponent);
-  };
-
-  #clearCommentsViewMap = () => {
-    if (!this.#popupCommentViewMap.size) {
-      return;
-    }
-
-    this.#popupCommentViewMap.forEach((comment) => remove(comment));
-    this.#popupCommentViewMap.clear();
+    this.#oldState = {};
   };
 
   get isPopupActive() {
@@ -127,47 +127,94 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     this.#closePopup();
   };
 
-  #convertStateToComment = (data) => {
-    const comment = data;
-
-    comment.id = nanoid();
-    comment.date = dayjs().format();
-
-    return comment;
-  };
-
   #handleCommentSubmit = (data) => {
-    if (!data.text || !data.emoji) {
-      return;
-    }
+    const movieId = this._movie.id;
 
-    const comment = this.#convertStateToComment(data);
-
-    const updatedMovie = {
-      ...this._movie,
-      comments: [...this._movie.comments, comment.id]
-    };
-
+    this.#setSubmitting();
     this._changeData(
       UserAction.ADD_COMMENT,
       UpdateType.MINOR,
-      {comment, updatedMovie}
+      {movieId, data}
     );
   };
 
   #handleCommentRemove = (commentId) => {
-    const movieCommentIndex = findIndexByValue(this._movie.comments, commentId);
-    const updatedComments = removeIndexFromArray(this._movie.comments, movieCommentIndex);
-
-    const updatedMovie = {
-      ...this._movie,
-      comments: updatedComments
-    };
-
+    this.#setDeleting(commentId);
     this._changeData(
       UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
-      {commentId, updatedMovie}
+      UpdateType.MINOR,
+      {commentId}
     );
+  };
+
+  handleMovieModelEvent = (updateType, data = null) => {
+    if (data && this.currentMovieId === data.id) {
+      this.#updateControls(data);
+    }
+    if (data === null) {
+      return;
+    }
+    this._movie = data;
+  };
+
+  handleCommentModelEvent = (updateType, data = null) => {
+    this.#updateComments(data);
+
+    if (updateType === UpdateType.MINOR) {
+      this.#oldState = {};
+      remove(this.#newCommentComponent);
+      this.#renderNewComment();
+    }
+  };
+
+  #updateControls = (movie) => {
+    remove(this.#controlsComponent);
+    this.#renderControls(movie);
+  };
+
+  #updateComments = (data) => {
+    if (data === null) {
+      this.#commentModel
+        .getMovieComments(this._movie.id)
+        .then((comments) => {
+          this.#clearComments();
+          this.#renderComments(comments);
+        });
+      return;
+    }
+    this.#clearComments();
+    this.#renderComments(data);
+  };
+
+  #setDeleting = (commentId) => {
+    const comment = this.#renderedComments.get(commentId);
+    comment.updateElement({
+      isDisabled: true,
+      isDeleting: true,
+    });
+  };
+
+  #setSubmitting = () => {
+    this.#newCommentComponent
+      .updateElement({
+        isDisabled: true,
+      });
+  };
+
+  unblockComment = (commentId) => {
+    const comment = this.#renderedComments.get(commentId);
+    comment.updateElement({
+      isDisabled: false,
+      isDeleting: false,
+    });
+    comment.shake();
+  };
+
+  unblockNewCommentForm = () => {
+    this.#newCommentComponent
+      .updateElement({
+        isDisabled: false,
+      });
+    this.#newCommentComponent.shake();
   };
 }

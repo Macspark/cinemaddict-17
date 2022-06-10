@@ -11,9 +11,8 @@ export default class MoviePresenter extends AbstractMoviePresenter {
     this.#popupPresenter = popupPresenter;
   }
 
-  init = (movie, comments = this._comments) => {
+  init = (movie) => {
     this._movie = movie;
-    this._comments = comments;
 
     const prevMovieComponent = this.#movieComponent;
 
@@ -37,6 +36,6 @@ export default class MoviePresenter extends AbstractMoviePresenter {
   };
 
   #handleMovieCardClick = () => {
-    this.#popupPresenter.init(this._movie, this._comments);
+    this.#popupPresenter.init(this._movie);
   };
 }

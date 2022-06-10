@@ -13,7 +13,8 @@ const createFilterItemTemplate  = (filter, isActive) => {
     : `<span class="main-navigation__item-count">${count}</span>`;
 
   return (
-    `<a href="#" data-filter-type="${name}" class="main-navigation__item ${isActive ? 'main-navigation__item--active' : ''}">${displayableName} 
+    `<a href="#" data-filter-type="${name}" class="main-navigation__item ${isActive ? 'main-navigation__item--active' : ''} ${count === 0 ? 'disabled' : ''}">
+      ${displayableName} 
       ${moviesCount}
     </a>`
   );
