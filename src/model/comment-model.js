@@ -1,7 +1,7 @@
 export default class CommentModel extends Observable {
   #commentsApiService;
 
-  constructor(commentsApiService, movieModel) {
+  constructor(commentsApiService) {
     super();
     this.#commentsApiService = commentsApiService;
   }
