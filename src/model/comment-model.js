@@ -1,14 +1,9 @@
-
-import Observable from '../framework/observable.js';
-
 export default class CommentModel extends Observable {
   #commentsApiService;
-  #movieModel;
 
   constructor(commentsApiService, movieModel) {
     super();
     this.#commentsApiService = commentsApiService;
-    this.#movieModel = movieModel;
   }
 
   getMovieComments = async (movieId) => {
