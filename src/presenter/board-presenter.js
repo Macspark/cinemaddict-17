@@ -13,6 +13,7 @@ import { getFilteredMovies } from '../utils/filter.js';
 import UserView from '../view/user.js';
 import LoadingView from '../view/loading.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import StatisticsView from '../view/statistics.js';
 
 export default class BoardPresenter {
   #EntryPoints;
@@ -38,6 +39,7 @@ export default class BoardPresenter {
   #showMoreButtonComponent = new ShowMoreButtonView();
   #movieSortComponent = null;
   #uiBlocker = new UiBlocker(BlockerTimeLimit.LOWER_LIMIT, BlockerTimeLimit.UPPER_LIMIT);
+  #statisticsComponent = null;
 
   #popupPresenter = null;
 
@@ -159,6 +161,15 @@ export default class BoardPresenter {
     }
   };
 
+  #renderStatistics = () => {
+    if (this.#statisticsComponent !== null) {
+      return;
+    }
+
+    this.#statisticsComponent = new StatisticsView(this.movies.length);
+    render(this.#statisticsComponent, this.#EntryPoints.STATISTICS_CONTAINER);
+  };
+
   #renderBoard = () => {
     this.#renderUser();
 
@@ -170,6 +181,7 @@ export default class BoardPresenter {
     const movies = this.movies;
     const movieCount = movies.length;
     render(this.#movieListBodyComponent, this.#EntryPoints.MAIN);
+    this.#renderStatistics();
 
     if (movieCount === 0) {
       this.#renderEmptyList();
@@ -268,13 +280,18 @@ export default class BoardPresenter {
     this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#movieModel.updateMovie(updateType, update.updatedMovie);
+        try {
+          await this.#movieModel.updateMovie(updateType, update.updatedMovie);
+        } catch(err) {
+          this.#uiBlocker.unblock();
+        }
         break;
       case UserAction.ADD_COMMENT:
         try {
           await this.#commentModel.addCommentToMovie(updateType, update.movieId, update.data);
         } catch(err) {
           this.#popupPresenter.unblockNewCommentForm();
+          this.#uiBlocker.unblock();
         }
         break;
       case UserAction.DELETE_COMMENT:
@@ -282,10 +299,10 @@ export default class BoardPresenter {
           await this.#commentModel.deleteCommentFromMovie(updateType, update.commentId);
         } catch(err) {
           this.#popupPresenter.unblockComment(update.commentId);
+          this.#uiBlocker.unblock();
         }
         break;
     }
-    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -307,5 +324,6 @@ export default class BoardPresenter {
         this.#renderBoard();
         break;
     }
+    this.#uiBlocker.unblock();
   };
 }

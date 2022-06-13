@@ -12,7 +12,6 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   #controlsComponent = null;
   #newCommentComponent = null;
   #commentCountView = null;
-  #oldState = {};
   #currentMovieId = -1;
   #isPopupActive = false;
   #commentModel;
@@ -24,10 +23,6 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   }
 
   init = (movie) => {
-    if (this.#newCommentComponent) {
-      this.#oldState = this.#newCommentComponent.state;
-    }
-
     if (this.#isPopupActive) {
       this.#closePopup();
     }
@@ -94,7 +89,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   };
 
   #renderNewComment = () => {
-    this.#newCommentComponent = new PopupNewCommentView(this.#oldState);
+    this.#newCommentComponent = new PopupNewCommentView();
     this.#newCommentComponent.setCommentSubmitHandler(this.#handleCommentSubmit);
     render(this.#newCommentComponent, this.#popupComponent.commentWrapElement, RenderPosition.BEFOREEND);
   };
@@ -105,7 +100,6 @@ export default class PopupPresenter extends AbstractMoviePresenter {
     document.removeEventListener('keydown', this.#onEscKeyDown);
     this.#isPopupActive = false;
     this.#currentMovieId = -1;
-    this.#oldState = {};
   };
 
   get isPopupActive() {
@@ -160,8 +154,7 @@ export default class PopupPresenter extends AbstractMoviePresenter {
   handleCommentModelEvent = (updateType, data = null) => {
     this.#updateComments(data);
 
-    if (updateType === UpdateType.MINOR) {
-      this.#oldState = {};
+    if (data) {
       remove(this.#newCommentComponent);
       this.#renderNewComment();
     }

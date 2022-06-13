@@ -48,10 +48,9 @@ const createNewCommentPopupTemplate = (state) => {
 };
 
 export default class PopupNewCommentView extends AbstractStatefulView {
-  constructor(state = {}) {
+  constructor() {
     super();
     this.#setInnerHandlers();
-    this.updateElement(state);
   }
 
   get template() {

@@ -4,8 +4,8 @@ const AUTHORIZATION = 'Basic fw23fhja22';
 const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict';
 
 const BlockerTimeLimit = {
-  LOWER_LIMIT: 300,
-  UPPER_LIMIT: 1000,
+  LOWER_LIMIT: 0,
+  UPPER_LIMIT: 300,
 };
 
 const MovieLabel = {
