@@ -1,12 +1,12 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { FilterType } from '../const.js';
 
-const createFilterItemTemplate  = (filterData, isActive) => {
+const createFilterItemTemplate  = (filterItem, isActive) => {
   const {
     name,
     displayableName,
     count
-  } = filterData;
+  } = filterItem;
 
   const moviesCount = name === FilterType.ALL
     ? ''
@@ -22,7 +22,7 @@ const createFilterItemTemplate  = (filterData, isActive) => {
 
 const createFilterTemplate = (filterItems, currentFilter) => {
   const filterItemsTemplate = filterItems
-    .map((filterData) => createFilterItemTemplate(filterData, currentFilter === filterData.name))
+    .map((filterItem) => createFilterItemTemplate(filterItem, currentFilter === filterItem.name))
     .join('');
 
   return (
